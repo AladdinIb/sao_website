@@ -1,0 +1,11 @@
+.DS_Store
+.claude/
+
+# Heavy local source images — the site uses the web-optimized .jpg versions.
+# Keep these on disk as masters, but don't ship them to GitHub.
+assets/images/mosaic_sources/
+assets/images/*_backdrop.png
+assets/images/torus_backdrop.jpg
+assets/images/decadal_plan.png
+assets/images/card_images/*.png
+assets/images/history_images/*.png
