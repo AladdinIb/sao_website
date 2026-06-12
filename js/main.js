@@ -73,7 +73,7 @@
     { big: "Thousands", label: "Of major discoveries" },
     { big: "Fifty", label: "States where our science has impact" },
     { big: "16+", label: "World-class observatories" },
-    { big: "Six", label: "Scientific divisions spanning all of astrophysics" }
+    { big: "Six", label: "Scientific divisions spanning all of astrophysics" },
     { big: "Humanity's First", label: "Image of a black hole" }
   ];
 
