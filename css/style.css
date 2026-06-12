@@ -634,15 +634,48 @@ a { color: inherit; }
 
 /* ---------- Impact: news feed ---------- */
 
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.4rem;
+/* Single row, always: overflow scrolls horizontally behind arrow buttons */
+.news-scroller {
+  position: relative;
   max-width: 1280px;
   margin: 0 auto;
 }
 
+.news-grid {
+  display: flex;
+  gap: 1.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: .6rem;
+  scrollbar-width: none;
+}
+.news-grid::-webkit-scrollbar { display: none; }
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: var(--si-blue);
+  color: var(--white);
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(14, 23, 38, .3);
+  transition: background .2s ease;
+}
+.scroll-btn:hover { background: var(--si-blue-bright); }
+.scroll-btn[hidden] { display: none; }
+.scroll-prev { left: -15px; }
+.scroll-next { right: -15px; }
+
 .news-card {
+  flex: 0 0 min(300px, 78vw);
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   background: var(--white);

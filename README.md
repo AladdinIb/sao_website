@@ -55,6 +55,10 @@ stays current without manual work. To refresh on demand: run the script locally 
 trigger the Action from the repo's Actions tab ("Run workflow"). If the CfA page layout changes,
 the script exits nonzero rather than writing a bad feed — check the Action logs.
 
+The cards always render as a single row: when the viewport can't fit them all, the row scrolls
+horizontally (hidden scrollbar, scroll-snap) behind circular arrow buttons that appear only when
+there is actually overflow in that direction.
+
 ## Collapsible sections (Impact & Top Ten Discoveries)
 
 "News from the Smithsonian Astrophysical Observatory" (#news) is always visible; below it,

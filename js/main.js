@@ -240,6 +240,31 @@
 
   const newsGrid = document.getElementById("news-grid");
   if (newsGrid) {
+    // Arrow buttons appear only when the single-row grid actually overflows
+    const prevBtn = document.querySelector(".news-scroller .scroll-prev");
+    const nextBtn = document.querySelector(".news-scroller .scroll-next");
+
+    const updateScrollButtons = () => {
+      if (!prevBtn || !nextBtn) return;
+      const overflow = newsGrid.scrollWidth > newsGrid.clientWidth + 4;
+      prevBtn.hidden = !overflow || newsGrid.scrollLeft <= 4;
+      nextBtn.hidden = !overflow ||
+        newsGrid.scrollLeft >= newsGrid.scrollWidth - newsGrid.clientWidth - 4;
+    };
+
+    if (prevBtn && nextBtn) {
+      const cardStep = () => {
+        const card = newsGrid.querySelector(".news-card");
+        return card ? card.offsetWidth + 22 : 320;
+      };
+      const slideNews = (dir) =>
+        newsGrid.scrollBy({ left: dir * cardStep(), behavior: reduceMotion ? "auto" : "smooth" });
+      prevBtn.addEventListener("click", () => slideNews(-1));
+      nextBtn.addEventListener("click", () => slideNews(1));
+      newsGrid.addEventListener("scroll", updateScrollButtons, { passive: true });
+      new ResizeObserver(updateScrollButtons).observe(newsGrid);
+    }
+
     fetch("assets/data/news.json")
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then((items) => {
@@ -263,6 +288,7 @@
           card.querySelector("h3").textContent = item.title;
           newsGrid.append(card);
         }
+        updateScrollButtons();
       })
       .catch(() => {
         const fallback = document.createElement("a");
