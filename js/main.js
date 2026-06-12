@@ -273,63 +273,30 @@
       });
   }
 
-  /* ---------- Impact: initiatives carousel ---------- */
+  /* ---------- Collapsible sections (Impact, Discoveries) ----------
+     The toggle button carries the a11y state; the whole header card is
+     clickable. Collapsed content is inert so it leaves the tab order. */
 
-  const carousel = document.querySelector(".carousel");
-  if (carousel) {
-    const prev = document.querySelector(".carousel-prev");
-    const next = document.querySelector(".carousel-next");
-    const step = () => {
-      const card = carousel.querySelector(".initiative-card");
-      return card ? card.offsetWidth + 22 : 460;
+  document.querySelectorAll(".collapsible").forEach((section) => {
+    const btn = section.querySelector(".collapse-toggle");
+    const header = section.querySelector(".collapse-header");
+    const body = section.querySelector(".collapse-body");
+    if (!btn || !header || !body) return;
+
+    const setOpen = (open) => {
+      section.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      body.inert = !open;
     };
-    const slide = (dir) =>
-      carousel.scrollBy({ left: dir * step(), behavior: reduceMotion ? "auto" : "smooth" });
+    setOpen(false);
 
-    prev.addEventListener("click", () => slide(-1));
-    next.addEventListener("click", () => slide(1));
-
-    const updateButtons = () => {
-      prev.disabled = carousel.scrollLeft <= 4;
-      next.disabled = carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth - 4;
-    };
-    carousel.addEventListener("scroll", updateButtons, { passive: true });
-    // ResizeObserver re-evaluates once styles/layout land (a load-time check
-    // can run before CSS applies, when the carousel doesn't overflow yet).
-    new ResizeObserver(updateButtons).observe(carousel);
-    updateButtons();
-
-    // Mouse drag-to-scroll (touch devices scroll natively)
-    let dragStartX = 0;
-    let dragStartScroll = 0;
-    let dragging = false;
-
-    carousel.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse") return;
-      dragging = true;
-      dragStartX = e.clientX;
-      dragStartScroll = carousel.scrollLeft;
-      carousel.setPointerCapture(e.pointerId);
+    header.addEventListener("click", (e) => {
+      // Let the button's own activation handle itself (incl. keyboard)
+      if (e.target.closest(".collapse-toggle")) return;
+      btn.click();
     });
-    carousel.addEventListener("pointermove", (e) => {
-      if (!dragging) return;
-      const moved = e.clientX - dragStartX;
-      if (Math.abs(moved) > 6) carousel.classList.add("dragging");
-      carousel.scrollLeft = dragStartScroll - moved;
-    });
-    const endDrag = () => {
-      dragging = false;
-      carousel.classList.remove("dragging");
-    };
-    carousel.addEventListener("pointerup", endDrag);
-    carousel.addEventListener("pointercancel", endDrag);
-
-    // Left/right arrows scroll the carousel when it has keyboard focus
-    carousel.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") { e.preventDefault(); slide(-1); }
-      if (e.key === "ArrowRight") { e.preventDefault(); slide(1); }
-    });
-  }
+    btn.addEventListener("click", () => setOpen(!section.classList.contains("open")));
+  });
 
   /* ---------- Timeline progress line ---------- */
 

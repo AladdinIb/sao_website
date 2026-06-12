@@ -94,87 +94,206 @@
   </section>
 
   <!-- ======= Impact ======= -->
-  <section class="section impact" id="impact">
-    <div class="section-head reveal">
-      <p class="kicker">National &amp; global impact</p>
-      <h2>Science in service to the nation</h2>
-      <p class="section-sub">SAO's facilities and data systems are working infrastructure for American science,
-        security, and industry — capabilities that exist nowhere else on Earth.</p>
-    </div>
-
-    <div class="carousel-wrap reveal">
-      <button class="carousel-btn carousel-prev" aria-label="Previous initiative">‹</button>
-      <div class="carousel" tabindex="0" role="region" aria-label="Major initiatives — scrollable carousel">
-        <article class="initiative-card">
-          <p class="initiative-tag">National Security</p>
-          <h3>Defend the Homeland</h3>
-          <p class="initiative-sub">Space situational awareness &amp; planetary defense</p>
-          <ul>
-            <li>The <strong>Minor Planet Center</strong> is the world's sole authority for tracking asteroids and
-              comets — including potentially hazardous near-Earth objects — serving as the foundational data layer
-              for NORAD, the U.S. Space Force, and NASA's Planetary Defense Coordination Office.</li>
-            <li><strong>HITRAN</strong>, the molecular spectroscopy database, underpins all U.S. military atmospheric
-              modeling and is depended on for directed energy, infrared sensing, and thermal imaging — with no
-              commercial or government alternative.</li>
-            <li>The <strong>Greenland Telescope</strong> at Pituffik Space Base anchors a visible U.S. scientific
-              presence at the military's northernmost installation.</li>
-          </ul>
-        </article>
-
-        <article class="initiative-card">
-          <p class="initiative-tag">AI &amp; Open Science</p>
-          <h3>Accelerate AI for Science</h3>
-          <p class="initiative-sub">Frontier AI and open data infrastructure</p>
-          <ul>
-            <li><strong>AstroAI</strong> applies frontier AI to astrophysical datasets at scale, already partnering
-              with the Department of Energy and NVIDIA on early AI-for-science initiatives.</li>
-            <li>The <strong>Astrophysics Data System and NASA SciX</strong> serve 16+ million unique visitors a year —
-              the discovery engine for the world's scientific literature, open and machine-readable.</li>
-            <li>SAO publishes raw data and code in <strong>public repositories</strong>, exemplifying reproducible,
-              transparent, merit-reviewed science.</li>
-          </ul>
-        </article>
-
-        <article class="initiative-card">
-          <p class="initiative-tag">Frontier Science</p>
-          <h3>Secure American Leadership</h3>
-          <p class="initiative-sub">Next-generation telescopes &amp; technology</p>
-          <ul>
-            <li>SAO is building critical <strong>Giant Magellan Telescope</strong> instrumentation — including a
-              revolutionary spectrograph to search for life on other worlds — for a project backed by nearly
-              $1 billion in private investment across 36 states.</li>
-            <li>SAO leads the world in <strong>black hole imaging</strong> through the Event Horizon Telescope, with
-              direct technology transfer to defense and communications.</li>
-            <li>SAO operates the <strong>Submillimeter Array</strong> and <strong>Whipple Observatory</strong> on
-              behalf of NASA and the entire U.S. astronomy community — infrastructure serving researchers, educators,
-              and industry in all 50 states.</li>
-          </ul>
-        </article>
-
-        <article class="initiative-card">
-          <p class="initiative-tag">Workforce &amp; Value</p>
-          <h3>Maximize Taxpayer Value</h3>
-          <p class="initiative-sub">Building America's STEM workforce</p>
-          <ul>
-            <li><strong>Central Engineering</strong> supports multiple missions simultaneously, avoiding the
-              duplicative costs of fragmenting capabilities across project-specific contracts.</li>
-            <li><strong>Smithsonian STARS</strong>, REU programs, and postdoctoral fellowships feed world-unique
-              talent into the technical workforce — training tomorrow's mission PIs and industry leaders for
-              American aerospace and defense.</li>
-          </ul>
-        </article>
+  <section class="section impact collapsible" id="impact">
+    <div class="collapse-header reveal">
+      <div class="collapse-head-text">
+        <p class="kicker kicker-light">National &amp; global impact</p>
+        <h2><button class="collapse-toggle" aria-expanded="false" aria-controls="impact-body">
+            Science in service to the nation</button></h2>
+        <p class="collapse-teaser">Planetary defense, AI for science, frontier telescopes, and America's STEM
+          workforce — capabilities that exist nowhere else on Earth, plus the latest discoveries from the CfA.</p>
+        <ul class="collapse-chips" aria-hidden="true">
+          <li>National Security</li>
+          <li>AI &amp; Open Science</li>
+          <li>Frontier Science</li>
+          <li>Workforce &amp; Value</li>
+          <li>Latest News</li>
+        </ul>
       </div>
-      <button class="carousel-btn carousel-next" aria-label="Next initiative">›</button>
+      <span class="collapse-icon" aria-hidden="true"></span>
     </div>
 
-    <div class="news-head reveal">
-      <h3>Latest from the Center for Astrophysics</h3>
-      <a class="card-link" href="https://www.cfa.harvard.edu/news" target="_blank" rel="noopener">All news at
-        cfa.harvard.edu <span aria-hidden="true">↗</span></a>
+    <div class="collapse-body" id="impact-body">
+      <div class="collapse-inner">
+        <div class="initiative-grid">
+          <article class="initiative-card">
+            <p class="initiative-tag">National Security</p>
+            <h3>Defend the Homeland</h3>
+            <p class="initiative-sub">Space situational awareness &amp; planetary defense</p>
+            <ul>
+              <li>The <strong>Minor Planet Center</strong> is the world's sole authority for tracking asteroids and
+                comets — including potentially hazardous near-Earth objects — serving as the foundational data layer
+                for NORAD, the U.S. Space Force, and NASA's Planetary Defense Coordination Office.</li>
+              <li><strong>HITRAN</strong>, the molecular spectroscopy database, underpins all U.S. military
+                atmospheric modeling and is depended on for directed energy, infrared sensing, and thermal imaging —
+                with no commercial or government alternative.</li>
+              <li>The <strong>Greenland Telescope</strong> at Pituffik Space Base anchors a visible U.S. scientific
+                presence at the military's northernmost installation.</li>
+            </ul>
+          </article>
+
+          <article class="initiative-card">
+            <p class="initiative-tag">AI &amp; Open Science</p>
+            <h3>Accelerate AI for Science</h3>
+            <p class="initiative-sub">Frontier AI and open data infrastructure</p>
+            <ul>
+              <li><strong>AstroAI</strong> applies frontier AI to astrophysical datasets at scale, already partnering
+                with the Department of Energy and NVIDIA on early AI-for-science initiatives.</li>
+              <li>The <strong>Astrophysics Data System and NASA SciX</strong> serve 16+ million unique visitors a
+                year — the discovery engine for the world's scientific literature, open and machine-readable.</li>
+              <li>SAO publishes raw data and code in <strong>public repositories</strong>, exemplifying reproducible,
+                transparent, merit-reviewed science.</li>
+            </ul>
+          </article>
+
+          <article class="initiative-card">
+            <p class="initiative-tag">Frontier Science</p>
+            <h3>Secure American Leadership</h3>
+            <p class="initiative-sub">Next-generation telescopes &amp; technology</p>
+            <ul>
+              <li>SAO is building critical <strong>Giant Magellan Telescope</strong> instrumentation — including a
+                revolutionary spectrograph to search for life on other worlds — for a project backed by nearly
+                $1 billion in private investment across 36 states.</li>
+              <li>SAO leads the world in <strong>black hole imaging</strong> through the Event Horizon Telescope,
+                with direct technology transfer to defense and communications.</li>
+              <li>SAO operates the <strong>Submillimeter Array</strong> and <strong>Whipple Observatory</strong> on
+                behalf of NASA and the entire U.S. astronomy community — infrastructure serving researchers,
+                educators, and industry in all 50 states.</li>
+            </ul>
+          </article>
+
+          <article class="initiative-card">
+            <p class="initiative-tag">Workforce &amp; Value</p>
+            <h3>Maximize Taxpayer Value</h3>
+            <p class="initiative-sub">Building America's STEM workforce</p>
+            <ul>
+              <li><strong>Central Engineering</strong> supports multiple missions simultaneously, avoiding the
+                duplicative costs of fragmenting capabilities across project-specific contracts.</li>
+              <li><strong>Smithsonian STARS</strong>, REU programs, and postdoctoral fellowships feed world-unique
+                talent into the technical workforce — training tomorrow's mission PIs and industry leaders for
+                American aerospace and defense.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="news-head">
+          <h3>Latest from the Center for Astrophysics</h3>
+          <a class="card-link" href="https://www.cfa.harvard.edu/news" target="_blank" rel="noopener">All news at
+            cfa.harvard.edu <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="news-grid" id="news-grid">
+          <noscript><a href="https://www.cfa.harvard.edu/news">Read the latest discoveries at
+              cfa.harvard.edu/news</a></noscript>
+        </div>
+      </div>
     </div>
-    <div class="news-grid" id="news-grid">
-      <noscript><a href="https://www.cfa.harvard.edu/news">Read the latest discoveries at cfa.harvard.edu/news</a>
-      </noscript>
+  </section>
+
+  <!-- ======= Top Ten Discoveries ======= -->
+  <section class="section discoveries collapsible" id="discoveries">
+    <div class="collapse-header reveal">
+      <div class="collapse-head-text">
+        <p class="kicker kicker-light">Greatest hits</p>
+        <h2><button class="collapse-toggle" aria-expanded="false" aria-controls="discoveries-body">
+            Ten discoveries that changed the universe</button></h2>
+        <p class="collapse-teaser">From proving comets are icy worlds to photographing a black hole — a century of
+          SAO science that rewrote the textbooks.</p>
+        <ul class="collapse-chips" aria-hidden="true">
+          <li>Black Holes</li>
+          <li>Dark Energy</li>
+          <li>Dark Matter</li>
+          <li>Exoplanets</li>
+          <li>Relativity</li>
+        </ul>
+      </div>
+      <span class="collapse-icon" aria-hidden="true"></span>
+    </div>
+
+    <div class="collapse-body" id="discoveries-body">
+      <div class="collapse-inner">
+        <ol class="discovery-list">
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">01</span>
+            <div>
+              <h3>Humanity's first image of a black hole</h3>
+              <p>The Event Horizon Telescope, led from SAO, unveiled the glowing ring of M87* in 2019 — then our own
+                galaxy's Sagittarius A* in 2022 — turning an untestable idea into an observable object.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">02</span>
+            <div>
+              <h3>The accelerating universe</h3>
+              <p>The High-Z Supernova Search, co-founded at the CfA, discovered that cosmic expansion is speeding up —
+                revealing dark energy and earning the 2011 Nobel Prize in Physics.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">03</span>
+            <div>
+              <h3>Direct evidence for dark matter</h3>
+              <p>Chandra's image of the Bullet Cluster caught dark matter sailing ahead of colliding gas — the first
+                direct empirical proof that it exists.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">04</span>
+            <div>
+              <h3>The cosmic web</h3>
+              <p>The CfA Redshift Survey produced the first true maps of large-scale structure, discovering the
+                "Great Wall" of galaxies and revealing that the universe is built of filaments and voids.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">05</span>
+            <div>
+              <h3>The first transiting exoplanet — and the first alien atmosphere</h3>
+              <p>CfA astronomers watched HD 209458 b cross its star in 1999, then detected sodium in its atmosphere —
+                founding the science of exoplanet characterization.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">06</span>
+            <div>
+              <h3>Comets are icy worlds</h3>
+              <p>SAO director Fred Whipple's 1950 "dirty snowball" model explained what comets actually are — and
+                guided every comet mission since.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">07</span>
+            <div>
+              <h3>Touching the Sun</h3>
+              <p>SAO-built instruments aboard Parker Solar Probe counted the solar wind as the spacecraft crossed
+                into the Sun's corona in 2021 — the first time humanity ever touched a star.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">08</span>
+            <div>
+              <h3>Opening the X-ray universe</h3>
+              <p>From the Einstein Observatory to Chandra, SAO scientists built the field of X-ray astronomy —
+                recognized with the 2002 Nobel Prize in Physics — and revealed the hot, violent cosmos.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">09</span>
+            <div>
+              <h3>The fourth test of general relativity</h3>
+              <p>Irwin Shapiro, longtime SAO director, predicted and measured the time delay of radar signals
+                grazing the Sun — a fundamental test of Einstein's theory that now bears his name.</p>
+            </div>
+          </li>
+          <li class="discovery">
+            <span class="discovery-rank" aria-hidden="true">10</span>
+            <div>
+              <h3>Weighing and shaping the Earth</h3>
+              <p>At the dawn of the Space Age, SAO's worldwide satellite-tracking network pioneered space geodesy —
+                refining Earth's true shape and gravity field, and laying groundwork for modern GPS.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
   </section>
 

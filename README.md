@@ -55,11 +55,14 @@ stays current without manual work. To refresh on demand: run the script locally 
 trigger the Action from the repo's Actions tab ("Run workflow"). If the CfA page layout changes,
 the script exits nonzero rather than writing a bad feed — check the Action logs.
 
-## The initiatives carousel (Impact section)
+## Collapsible sections (Impact & Top Ten Discoveries)
 
-The "Science in service to the nation" carousel cards are plain HTML in `index.html`
-(`.initiative-card`). Add or edit cards there — the prev/next buttons, drag-to-scroll, and
-arrow-key support adapt automatically.
+"Science in service to the nation" (#impact) and "Ten discoveries that changed the universe"
+(#discoveries) are collapsed by default into banner cards; clicking anywhere on the banner (or
+its button) expands them with full keyboard/screen-reader support. The initiative cards and the
+discoveries list are plain HTML in `index.html` (`.initiative-card`, `.discovery`) — edit or add
+entries there; layout and the expand/collapse behavior adapt automatically. Collapsed content is
+`inert`, so it stays out of the keyboard tab order.
 
 ## Adding to the rotating stats
 

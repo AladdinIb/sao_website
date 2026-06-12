@@ -44,11 +44,13 @@ exist and is NOT this site).
   scripts/update_news.py (scrapes cfa.harvard.edu/news; regex tied to their Drupal markup —
   a.copy-box / news-photo-frame / h4). A daily GitHub Action commits refreshes. Never
   hand-edit news.json.
-- Carousel (Impact section): initiative cards are static HTML; controls in main.js use a
-  ResizeObserver for button state because a load-time check can run before CSS applies.
-  NOTE: smooth scrolling (and rAF animations generally) stall in the preview tool's
-  throttled background window — verify scrolling with behavior:'auto' there; smooth works
-  in real browsers.
+- Collapsible sections (Impact #impact, Discoveries #discoveries): banner header +
+  grid-template-rows 0fr→1fr animation; toggle button carries aria-expanded, body gets
+  `inert` when collapsed. Generic: any section with .collapsible/.collapse-header/
+  .collapse-toggle/.collapse-body wires itself up in main.js.
+  NOTE: rAF-driven animation (incl. smooth scrolling) stalls in the preview tool's
+  throttled background window; also preview_click double-fires on elements with click
+  handlers (toggles open+shut) — use element.click() via preview_eval to test toggles.
 - The mobile nav overlay is a fixed-position child of the header: never put
   `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
   block and pins the overlay inside the 60px bar — the frosted background lives on
