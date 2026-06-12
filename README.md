@@ -9,20 +9,25 @@ Deployed via GitHub Pages from the `main` branch root — every push to `main` g
 ## Structure
 
 ```
-index.html                  Single-page site (hero, stats, missions, history, CfA, footer)
+index.html                  Single-page site (hero, stats, impact, missions, history, CfA, footer)
 css/style.css               All styles; brand colors as CSS variables in :root
 js/main.js                  Interactions: nav, scroll reveals, rotating stat,
-                            photo mosaic, timeline progress
+                            photo mosaic, news feed, initiatives carousel, timeline
 assets/
   logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI (SVG)
+  data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
     history_images/         Timeline photos
     mosaic/                 600x600 tiles for the rotating stats mosaic
     mosaic_sources/         Raw drop folder for new mosaic images (gitignored)
+    news/                   Cached CfA news images (auto-generated)
   favicon.svg               Smithsonian sunburst (+ PNG fallbacks)
 scripts/
   add_mosaic_images.sh      Mosaic image pipeline (see below)
+  update_news.py            CfA news feed scraper (see below)
+.github/workflows/
+  update-news.yml           Daily Action that refreshes the news feed
 ```
 
 Heavy source images (original PNGs/screenshots) stay local and are gitignored; the repo only ships web-optimized JPEGs. See `.gitignore`.
@@ -38,6 +43,23 @@ Heavy source images (original PNGs/screenshots) stay local and are gitignored; t
    ```
 
 The script center-crops each image to a 600×600 JPEG tile named `mosaic_NN.jpg`, regenerates the `MOSAIC_MANIFEST` array in `js/main.js`, syntax-checks the result, and moves processed sources to `mosaic_sources/processed/`. It also rejects images that already exist in the roster under a different filename (perceptual hash comparison) — the on-page rotation guarantees no image ever appears in two grid tiles at once, but it can only do that if each image exists exactly once. macOS only (uses `sips`; duplicate detection needs Pillow, and is skipped gracefully without it).
+
+## The news feed (Impact section)
+
+"Latest from the Center for Astrophysics" renders from `assets/data/news.json`, which
+`scripts/update_news.py` builds by scraping the Recent News Releases list on
+[cfa.harvard.edu/news](https://www.cfa.harvard.edu/news) (top 6 items, images downloaded and
+optimized into `assets/images/news/`). A scheduled GitHub Action
+(`.github/workflows/update-news.yml`) runs it daily and commits any changes, so the live site
+stays current without manual work. To refresh on demand: run the script locally and push, or
+trigger the Action from the repo's Actions tab ("Run workflow"). If the CfA page layout changes,
+the script exits nonzero rather than writing a bad feed — check the Action logs.
+
+## The initiatives carousel (Impact section)
+
+The "Science in service to the nation" carousel cards are plain HTML in `index.html`
+(`.initiative-card`). Add or edit cards there — the prev/next buttons, drag-to-scroll, and
+arrow-key support adapt automatically.
 
 ## Adding to the rotating stats
 

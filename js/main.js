@@ -234,6 +234,103 @@
     });
   }
 
+  /* ---------- Impact: news feed ----------
+     Rendered from assets/data/news.json, which scripts/update_news.py
+     (run daily by a GitHub Action) refreshes from cfa.harvard.edu/news. */
+
+  const newsGrid = document.getElementById("news-grid");
+  if (newsGrid) {
+    fetch("assets/data/news.json")
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((items) => {
+        for (const item of items) {
+          const card = document.createElement("a");
+          card.className = "news-card";
+          card.href = item.url;
+          card.target = "_blank";
+          card.rel = "noopener";
+
+          const date = new Date(item.date + "T12:00:00");
+          const dateText = isNaN(date) ? item.date
+            : date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+          card.innerHTML = `
+            ${item.image ? `<div class="news-card-photo"><img src="${item.image}" alt="" loading="lazy"></div>` : ""}
+            <div class="news-card-body">
+              <div class="news-card-meta"><span>${item.label}</span><time datetime="${item.date}">${dateText}</time></div>
+              <h4></h4>
+            </div>`;
+          card.querySelector("h4").textContent = item.title;
+          newsGrid.append(card);
+        }
+      })
+      .catch(() => {
+        const fallback = document.createElement("a");
+        fallback.className = "card-link";
+        fallback.href = "https://www.cfa.harvard.edu/news";
+        fallback.textContent = "Read the latest discoveries at cfa.harvard.edu/news";
+        newsGrid.append(fallback);
+      });
+  }
+
+  /* ---------- Impact: initiatives carousel ---------- */
+
+  const carousel = document.querySelector(".carousel");
+  if (carousel) {
+    const prev = document.querySelector(".carousel-prev");
+    const next = document.querySelector(".carousel-next");
+    const step = () => {
+      const card = carousel.querySelector(".initiative-card");
+      return card ? card.offsetWidth + 22 : 460;
+    };
+    const slide = (dir) =>
+      carousel.scrollBy({ left: dir * step(), behavior: reduceMotion ? "auto" : "smooth" });
+
+    prev.addEventListener("click", () => slide(-1));
+    next.addEventListener("click", () => slide(1));
+
+    const updateButtons = () => {
+      prev.disabled = carousel.scrollLeft <= 4;
+      next.disabled = carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth - 4;
+    };
+    carousel.addEventListener("scroll", updateButtons, { passive: true });
+    // ResizeObserver re-evaluates once styles/layout land (a load-time check
+    // can run before CSS applies, when the carousel doesn't overflow yet).
+    new ResizeObserver(updateButtons).observe(carousel);
+    updateButtons();
+
+    // Mouse drag-to-scroll (touch devices scroll natively)
+    let dragStartX = 0;
+    let dragStartScroll = 0;
+    let dragging = false;
+
+    carousel.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse") return;
+      dragging = true;
+      dragStartX = e.clientX;
+      dragStartScroll = carousel.scrollLeft;
+      carousel.setPointerCapture(e.pointerId);
+    });
+    carousel.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const moved = e.clientX - dragStartX;
+      if (Math.abs(moved) > 6) carousel.classList.add("dragging");
+      carousel.scrollLeft = dragStartScroll - moved;
+    });
+    const endDrag = () => {
+      dragging = false;
+      carousel.classList.remove("dragging");
+    };
+    carousel.addEventListener("pointerup", endDrag);
+    carousel.addEventListener("pointercancel", endDrag);
+
+    // Left/right arrows scroll the carousel when it has keyboard focus
+    carousel.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); slide(-1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); slide(1); }
+    });
+  }
+
   /* ---------- Timeline progress line ---------- */
 
   const timeline = document.querySelector(".timeline");
