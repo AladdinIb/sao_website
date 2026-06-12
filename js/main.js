@@ -141,7 +141,6 @@
     "mosaic_04.jpg",
     "mosaic_05.jpg",
     "mosaic_06.jpg",
-    "mosaic_07.jpg",
     "mosaic_08.jpg",
     "mosaic_09.jpg",
     "mosaic_10.jpg",

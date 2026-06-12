@@ -29,6 +29,7 @@ next=$((10#${next:-0} + 1))
 
 shopt -s nullglob nocaseglob
 count=0
+dupes=0
 for src in "$SOURCES"/*.{jpg,jpeg,png,heic,webp,tif,tiff}; do
   out=$(printf 'mosaic_%02d.jpg' "$next")
   w=$(sips -g pixelWidth "$src" | awk '/pixelWidth/{print $2}')
@@ -47,6 +48,37 @@ for src in "$SOURCES"/*.{jpg,jpeg,png,heic,webp,tif,tiff}; do
   sips --cropToHeightWidth 600 600 "$tmp" >/dev/null
   sips -s format jpeg -s formatOptions 72 "$tmp" --out "$MOSAIC/$out" >/dev/null
   rm -f "$tmp"
+
+  # Reject images that already exist in the roster under another name
+  # (perceptual average-hash; the no-repeats rotation can only dedupe filenames).
+  dupe=$(python3 - "$MOSAIC/$out" "$MOSAIC" <<'PYEOF'
+import sys, pathlib
+try:
+    from PIL import Image
+except ImportError:
+    sys.exit(0)  # Pillow unavailable: skip dedupe rather than fail
+def ahash(p, size=16):
+    px = list(Image.open(p).convert("L").resize((size, size)).getdata())
+    avg = sum(px) / len(px)
+    return [v > avg for v in px]
+new = pathlib.Path(sys.argv[1])
+h = ahash(new)
+for other in pathlib.Path(sys.argv[2]).glob("*.jpg"):
+    if other.name == new.name:
+        continue
+    if sum(a != b for a, b in zip(h, ahash(other))) <= 12:
+        print(other.name)
+        break
+PYEOF
+)
+  if [ -n "$dupe" ]; then
+    rm -f "$MOSAIC/$out"
+    mv "$src" "$DONE/"
+    echo "  DUPLICATE: $(basename "$src") matches existing $dupe — skipped"
+    dupes=$((dupes + 1))
+    continue
+  fi
+
   mv "$src" "$DONE/"
   echo "  $(basename "$src") -> $out ($(du -h "$MOSAIC/$out" | cut -f1 | tr -d ' '))"
   next=$((next + 1))
@@ -55,7 +87,11 @@ done
 shopt -u nullglob nocaseglob
 
 if [ "$count" -eq 0 ]; then
-  echo "No new images found in $SOURCES"
+  if [ "$dupes" -gt 0 ]; then
+    echo "No new tiles added ($dupes duplicate(s) skipped)."
+  else
+    echo "No new images found in $SOURCES"
+  fi
   exit 0
 fi
 
