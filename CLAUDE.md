@@ -34,7 +34,10 @@ exist and is NOT this site).
   logo is a generated recolor of the black one.
 - Mosaic: `scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it
   numbers tiles, regenerates `MOSAIC_MANIFEST` in js/main.js, and syntax-checks. In dev the
-  mosaic auto-discovers via directory listing; on Pages it uses the manifest.
+  mosaic auto-discovers via directory listing; on Pages it uses the manifest. The rotation
+  uses a reservation set so the same image never appears in two tiles at once, including
+  while loading or mid-crossfade (reserved from assignment until fade-out completes) —
+  preserve this invariant when touching the rotation code.
 - Rotating stats: `ROTATING_STATS` in js/main.js. Numeric `big` values (optional trailing
   `+`) count up; words render as text, `.long` class auto-applies over 6 chars.
 - The mobile nav overlay is a fixed-position child of the header: never put

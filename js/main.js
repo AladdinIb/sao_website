@@ -174,41 +174,63 @@
 
     discoverImages().then((files) => {
       const tiles = [];
+      // An image is "reserved" from the moment it is assigned to a tile until
+      // it has fully faded out — so no two tiles can ever show it at once,
+      // even mid-crossfade or while a swap is still loading.
+      const reserved = new Set();
+
       for (let i = 0; i < TILE_COUNT; i++) {
         const tile = document.createElement("div");
         tile.className = "mosaic-tile";
         const a = new Image();
         const b = new Image();
-        a.src = MOSAIC_DIR + files[i % files.length];
+        const file = files[i % files.length];
+        a.src = MOSAIC_DIR + file;
         a.className = "front";
         a.alt = "";
         b.alt = "";
         tile.append(a, b);
         mosaic.append(tile);
-        tiles.push({ imgs: [a, b], front: 0 });
+        reserved.add(file);
+        tiles.push({ imgs: [a, b], front: 0, current: file, pending: false });
       }
 
       // Rotation only makes sense with more images than tiles.
       if (reduceMotion || files.length <= TILE_COUNT) return;
 
+      const FADE_MS = 1300; // a hair over the 1.2s CSS opacity transition
       let cursor = TILE_COUNT;
+
       setInterval(() => {
         const t = tiles[Math.floor(Math.random() * tiles.length)];
-        const visible = new Set(tiles.map((x) => x.imgs[x.front].src));
-        // Skip images already on screen in another tile.
+        if (t.pending) return; // tile is mid-swap; skip this beat
+
+        let candidate = null;
         for (let tries = 0; tries < files.length; tries++) {
-          const candidate = new URL(MOSAIC_DIR + files[cursor % files.length], location.href).href;
-          if (!visible.has(candidate)) break;
+          const f = files[cursor % files.length];
           cursor++;
+          if (!reserved.has(f)) { candidate = f; break; }
         }
+        if (!candidate) return; // every image is on screen or still fading
+
+        reserved.add(candidate);
+        t.pending = true;
+        const outgoing = t.current;
         const back = t.imgs[1 - t.front];
         back.onload = () => {
           back.classList.add("front");
           t.imgs[t.front].classList.remove("front");
           t.front = 1 - t.front;
+          t.current = candidate;
+          t.pending = false;
+          // Release the outgoing image only after its crossfade completes.
+          setTimeout(() => reserved.delete(outgoing), FADE_MS);
         };
-        back.src = MOSAIC_DIR + files[cursor % files.length];
-        cursor++;
+        back.onerror = () => {
+          reserved.delete(candidate);
+          t.pending = false;
+        };
+        back.src = MOSAIC_DIR + candidate;
       }, 1800);
     });
   }
