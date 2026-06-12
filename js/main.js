@@ -135,10 +135,24 @@
 
   const MOSAIC_DIR = "assets/images/mosaic/";
   const MOSAIC_MANIFEST = [
-    "mosaic_01.jpg", "mosaic_02.jpg", "mosaic_03.jpg", "mosaic_04.jpg",
-    "mosaic_05.jpg", "mosaic_06.jpg", "mosaic_07.jpg", "mosaic_08.jpg",
-    "mosaic_09.jpg", "mosaic_10.jpg", "mosaic_11.jpg", "mosaic_12.jpg",
-    "mosaic_13.jpg"
+    "mosaic_01.jpg",
+    "mosaic_02.jpg",
+    "mosaic_03.jpg",
+    "mosaic_04.jpg",
+    "mosaic_05.jpg",
+    "mosaic_06.jpg",
+    "mosaic_07.jpg",
+    "mosaic_08.jpg",
+    "mosaic_09.jpg",
+    "mosaic_10.jpg",
+    "mosaic_11.jpg",
+    "mosaic_12.jpg",
+    "mosaic_13.jpg",
+    "mosaic_14.jpg",
+    "mosaic_15.jpg",
+    "mosaic_16.jpg",
+    "mosaic_17.jpg",
+    "mosaic_18.jpg"
   ];
 
   const mosaic = document.querySelector(".stats-mosaic");
