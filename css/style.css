@@ -54,12 +54,25 @@ a { color: inherit; }
   transition: background .35s ease, box-shadow .35s ease, height .35s ease;
 }
 
-.site-header.scrolled {
+/* The frosted backdrop lives on a pseudo-element: backdrop-filter on the
+   header itself would make it the containing block for the fixed-position
+   mobile nav overlay, pinning the menu inside the 60px header bar. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: rgba(5, 13, 36, .92);
   backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+.site-header.scrolled {
   box-shadow: 0 2px 24px rgba(0, 0, 0, .35);
   height: 60px;
 }
+.site-header.scrolled::before { opacity: 1; }
 
 .brand {
   display: flex;
