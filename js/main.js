@@ -67,13 +67,14 @@
 
   const ROTATING_STATS = [
     { big: "1890", label: "Exploring the cosmos<br>since our founding" },
-    { big: "800", label: "People pushing the frontiers of astrophysics" },
+    { big: "600", label: "People pushing the frontiers of astrophysics" },
     { big: "300", label: "Years of combined history" },
     { big: "Two", label: "Nobel prizes" },
     { big: "Thousands", label: "Of major discoveries" },
     { big: "Fifty", label: "States where our science has impact" },
     { big: "16+", label: "World-class observatories" },
     { big: "Six", label: "Scientific divisions spanning all of astrophysics" }
+    { big: "Humanity's First", label: "Image of a black hole" }
   ];
 
   const lead = document.querySelector(".stat-lead");
