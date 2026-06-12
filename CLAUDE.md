@@ -1,0 +1,58 @@
+# CLAUDE.md — project guide
+
+Static Smithsonian-branded site for the Smithsonian Astrophysical Observatory.
+Live at <https://granttremblay.github.io/sao_website/> (GitHub Pages, `main` branch root,
+repo `granttremblay/sao_website` — note the underscore; a stray hyphenated repo may still
+exist and is NOT this site).
+
+## Hard rules
+
+- **Keep `README.md` up to date.** Any change to structure, workflows, URLs, scripts, or
+  the stats/mosaic systems must be reflected there in the same commit.
+- **Syntax-check JS before pushing**: `node --check js/main.js`. All of main.js is one IIFE;
+  one syntax error blanks the entire site (scroll reveals never fire and content stays at
+  opacity 0). This has happened once already (missing comma in ROTATING_STATS).
+- **Optimize every image before it ships.** Nothing over ~500KB in the repo. Use `sips`:
+  cards ~900px / hero & backdrops 1920px wide, JPEG quality 70–75. Original PNGs/screenshots
+  stay local — `.gitignore` excludes them; keep it that way.
+- **Verify in the preview before pushing** (`preview_start` config: `sao-website`, python
+  http.server on port 4173). Browser caches aggressively; force-reload assets with
+  `fetch(url, {cache: 'reload'})` before `location.reload()`.
+- Push to deploy: plain `git push`, live in ~1 min. The user expects pushes after completed,
+  verified work on this site.
+
+## Architecture notes
+
+- No build step. index.html + css/style.css + js/main.js. The user's editor reformats HTML
+  (wraps long attribute lines) — match that style; re-grep before Edit if a match fails.
+- Brand: Geologica (Google Fonts, matches science.si.edu), Smithsonian blue `#002554`,
+  sunburst yellow `#ffcd00`, cyan `#38bdf8`→indigo `#6366f1` gradient for accents
+  (CfA red/violet vars exist but are unused — user reverted them as too dark on navy).
+- Logos in assets/logos. SI/AO SVGs contain live Minion Pro `<text>` (renders via serif
+  fallback — acceptable, outlined versions would be better). CfA + Smithsonian Science
+  logos are fully outlined. "Reversed" = white text for dark backgrounds. The white STARS
+  logo is a generated recolor of the black one.
+- Mosaic: `scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it
+  numbers tiles, regenerates `MOSAIC_MANIFEST` in js/main.js, and syntax-checks. In dev the
+  mosaic auto-discovers via directory listing; on Pages it uses the manifest.
+- Rotating stats: `ROTATING_STATS` in js/main.js. Numeric `big` values (optional trailing
+  `+`) count up; words render as text, `.long` class auto-applies over 6 chars.
+- The mobile nav overlay is a fixed-position child of the header: never put
+  `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
+  block and pins the overlay inside the 60px bar — the frosted background lives on
+  `.site-header::before` for exactly this reason).
+
+## Accessibility baseline (do not regress)
+
+axe-core reports zero violations. Every img has alt (decorative → `alt=""`), skip link +
+`<main>` landmark, `:focus-visible` outlines, closed mobile menu is `visibility: hidden`
+(out of tab order), Escape closes it and refocuses the toggle, ↗ arrows are aria-hidden,
+all animation respects `prefers-reduced-motion`. Re-run axe after meaningful UI changes
+(snippet in README).
+
+## Social card
+
+`assets/images/social_card.jpg` (1200×630) rendered from an HTML comp via headless Chrome
+(source pattern: /tmp/social_card.html — VERITAS backdrop + vertical SAO logo + tagline).
+OG/Twitter tags in index.html use absolute URLs — update them if the domain ever changes,
+and regenerate the card if branding/tagline changes.
