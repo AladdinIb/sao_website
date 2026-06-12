@@ -46,7 +46,7 @@ The script center-crops each image to a 600×600 JPEG tile named `mosaic_NN.jpg`
 
 ## The news feed (Impact section)
 
-"Latest from the Center for Astrophysics" renders from `assets/data/news.json`, which
+"News from the Smithsonian Astrophysical Observatory" renders from `assets/data/news.json`, which
 `scripts/update_news.py` builds by scraping the Recent News Releases list on
 [cfa.harvard.edu/news](https://www.cfa.harvard.edu/news) (top 6 items, images downloaded and
 optimized into `assets/images/news/`). A scheduled GitHub Action
@@ -57,12 +57,13 @@ the script exits nonzero rather than writing a bad feed — check the Action log
 
 ## Collapsible sections (Impact & Top Ten Discoveries)
 
-"Science in service to the nation" (#impact) and "Ten discoveries that changed the universe"
-(#discoveries) are collapsed by default into banner cards; clicking anywhere on the banner (or
-its button) expands them with full keyboard/screen-reader support. The initiative cards and the
-discoveries list are plain HTML in `index.html` (`.initiative-card`, `.discovery`) — edit or add
-entries there; layout and the expand/collapse behavior adapt automatically. Collapsed content is
-`inert`, so it stays out of the keyboard tab order.
+"News from the Smithsonian Astrophysical Observatory" (#news) is always visible; below it,
+"Science in service to the nation" and "Ten discoveries that changed the universe" are compact
+banner cards sitting side by side (#impact section). Clicking a banner (or its button) expands
+that card's content to full width beneath the pair — accordion style, so opening one closes the
+other. The initiative cards and the discoveries list are plain HTML in `index.html`
+(`.initiative-card`, `.discovery`) — edit or add entries there. Collapsed content is `inert`,
+so it stays out of the keyboard tab order.
 
 ## Adding to the rotating stats
 

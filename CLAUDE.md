@@ -44,10 +44,14 @@ exist and is NOT this site).
   scripts/update_news.py (scrapes cfa.harvard.edu/news; regex tied to their Drupal markup —
   a.copy-box / news-photo-frame / h4). A daily GitHub Action commits refreshes. Never
   hand-edit news.json.
-- Collapsible sections (Impact #impact, Discoveries #discoveries): banner header +
-  grid-template-rows 0fr→1fr animation; toggle button carries aria-expanded, body gets
-  `inert` when collapsed. Generic: any section with .collapsible/.collapse-header/
-  .collapse-toggle/.collapse-body wires itself up in main.js.
+- Expander cards (.expanders section, #impact): two compact .collapse-header cards side
+  by side; full-width .collapse-body siblings expand below the pair (grid-template-rows
+  0fr→1fr), accordion-style (one open at a time). Toggle button carries aria-expanded,
+  closed bodies are `inert`. News (#news) is its own always-visible section above them;
+  its JS-rendered cards must use <h3> (heading-order: section h2 → card h3).
+  WARNING: when splicing index.html with regex, anchor extraction patterns precisely —
+  a greedy initiative-grid regex once swallowed the news block and half the missions
+  section, duplicating them. Sanity-check section counts after any large splice.
   NOTE: rAF-driven animation (incl. smooth scrolling) stalls in the preview tool's
   throttled background window; also preview_click double-fires on elements with click
   handlers (toggles open+shut) — use element.click() via preview_eval to test toggles.

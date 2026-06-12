@@ -258,9 +258,9 @@
             ${item.image ? `<div class="news-card-photo"><img src="${item.image}" alt="" loading="lazy"></div>` : ""}
             <div class="news-card-body">
               <div class="news-card-meta"><span>${item.label}</span><time datetime="${item.date}">${dateText}</time></div>
-              <h4></h4>
+              <h3></h3>
             </div>`;
-          card.querySelector("h4").textContent = item.title;
+          card.querySelector("h3").textContent = item.title;
           newsGrid.append(card);
         }
       })
@@ -273,29 +273,42 @@
       });
   }
 
-  /* ---------- Collapsible sections (Impact, Discoveries) ----------
-     The toggle button carries the a11y state; the whole header card is
+  /* ---------- Expander cards (Impact, Discoveries) ----------
+     Compact header cards sit side by side; each expands a full-width
+     body below the pair. Accordion: opening one closes the other. The
+     toggle button carries the a11y state; the whole header card is
      clickable. Collapsed content is inert so it leaves the tab order. */
 
-  document.querySelectorAll(".collapsible").forEach((section) => {
-    const btn = section.querySelector(".collapse-toggle");
-    const header = section.querySelector(".collapse-header");
-    const body = section.querySelector(".collapse-body");
-    if (!btn || !header || !body) return;
+  document.querySelectorAll(".expanders").forEach((section) => {
+    const headers = [...section.querySelectorAll(".collapse-header")];
 
-    const setOpen = (open) => {
-      section.classList.toggle("open", open);
+    const partsOf = (header) => {
+      const btn = header.querySelector(".collapse-toggle");
+      return { btn, body: document.getElementById(btn.getAttribute("aria-controls")) };
+    };
+
+    const setOpen = (header, open) => {
+      const { btn, body } = partsOf(header);
+      header.classList.toggle("open", open);
+      body.classList.toggle("open", open);
       btn.setAttribute("aria-expanded", String(open));
       body.inert = !open;
     };
-    setOpen(false);
 
-    header.addEventListener("click", (e) => {
-      // Let the button's own activation handle itself (incl. keyboard)
-      if (e.target.closest(".collapse-toggle")) return;
-      btn.click();
+    headers.forEach((header) => {
+      setOpen(header, false);
+      const { btn } = partsOf(header);
+      header.addEventListener("click", (e) => {
+        // Let the button's own activation handle itself (incl. keyboard)
+        if (e.target.closest(".collapse-toggle")) return;
+        btn.click();
+      });
+      btn.addEventListener("click", () => {
+        const willOpen = !header.classList.contains("open");
+        headers.forEach((h) => setOpen(h, false));
+        if (willOpen) setOpen(header, true);
+      });
     });
-    btn.addEventListener("click", () => setOpen(!section.classList.contains("open")));
   });
 
   /* ---------- Timeline progress line ---------- */
