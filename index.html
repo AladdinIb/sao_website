@@ -36,22 +36,26 @@
 
 <body>
 
+  <a class="skip-link" href="#main">Skip to main content</a>
+
   <!-- ======= Header ======= -->
   <header class="site-header" id="top">
     <a class="brand" href="#top">
       <img class="brand-logo" src="assets/logos/si_AO_rgb_horizontal_color-reversed.svg"
         alt="Smithsonian Astrophysical Observatory">
     </a>
-    <nav class="site-nav" aria-label="Primary">
+    <nav class="site-nav" id="primary-nav" aria-label="Primary">
       <a href="#missions">Missions</a>
       <a href="#history">Our History</a>
       <a href="#cfa">The CfA</a>
-      <a class="nav-cta" href="https://www.si.edu" target="_blank" rel="noopener">si.edu ↗</a>
+      <a class="nav-cta" href="https://www.si.edu" target="_blank" rel="noopener">si.edu <span aria-hidden="true">↗</span></a>
     </nav>
-    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
       <span></span><span></span><span></span>
     </button>
   </header>
+
+  <main id="main">
 
   <!-- ======= Hero ======= -->
   <section class="hero">
@@ -108,7 +112,7 @@
           <h3>Chandra X-ray Observatory</h3>
           <p>NASA's flagship X-ray telescope, operated by SAO since 1999. Chandra reveals the hot, violent universe —
             exploding stars, colliding galaxies, and matter swirling into black holes.</p>
-          <a class="card-link" href="https://chandra.si.edu" target="_blank" rel="noopener">chandra.si.edu ↗</a>
+          <a class="card-link" href="https://chandra.si.edu" target="_blank" rel="noopener">chandra.si.edu <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -122,8 +126,7 @@
           <h3>Lynx X-ray Observatory</h3>
           <p>A vision for NASA's next great X-ray telescope, designed with SAO leadership: fifty times more sensitive
             than Chandra, built to watch the universe's first black holes ignite at cosmic dawn.</p>
-          <a class="card-link" href="https://www.lynxobservatory.org" target="_blank" rel="noopener">lynxobservatory.org
-            ↗</a>
+          <a class="card-link" href="https://www.lynxobservatory.org" target="_blank" rel="noopener">lynxobservatory.org <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -138,7 +141,7 @@
           <p>A planet-spanning network of radio dishes that captured humanity's first image of a black hole in 2019 — a
             discovery led from SAO and the CfA.</p>
           <a class="card-link" href="https://eventhorizontelescope.org" target="_blank"
-            rel="noopener">eventhorizontelescope.org ↗</a>
+            rel="noopener">eventhorizontelescope.org <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -151,7 +154,7 @@
           <h3>TEMPO</h3>
           <p>SAO's space-based instrument measures air pollution over North America every hour — the first mission of
             its kind, turning astronomy's tools toward our own planet.</p>
-          <a class="card-link" href="https://tempo.si.edu" target="_blank" rel="noopener">tempo.si.edu ↗</a>
+          <a class="card-link" href="https://tempo.si.edu" target="_blank" rel="noopener">tempo.si.edu <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -164,7 +167,7 @@
           <h3>Giant Magellan Telescope</h3>
           <p>SAO is a founding partner of the GMT — a 25-meter giant rising in the Chilean Andes that will see the
             cosmos with ten times the sharpness of Hubble.</p>
-          <a class="card-link" href="https://giantmagellan.org" target="_blank" rel="noopener">giantmagellan.org ↗</a>
+          <a class="card-link" href="https://giantmagellan.org" target="_blank" rel="noopener">giantmagellan.org <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -178,8 +181,7 @@
           <h3>Submillimeter Array</h3>
           <p>Eight precision antennas atop Maunakea, Hawaiʻi, watching planets form and galaxies evolve — and a key
             station in the Event Horizon Telescope.</p>
-          <a class="card-link" href="https://lweb.cfa.harvard.edu/sma/" target="_blank" rel="noopener">Visit the SMA
-            ↗</a>
+          <a class="card-link" href="https://lweb.cfa.harvard.edu/sma/" target="_blank" rel="noopener">Visit the SMA <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -194,7 +196,7 @@
           <p>SAO built the instrument suite that counts particles of the solar wind aboard NASA's Parker Solar Probe —
             the fastest spacecraft ever flown, brushing the Sun's outer atmosphere.</p>
           <a class="card-link" href="https://www.cfa.harvard.edu" target="_blank" rel="noopener">Solar &amp; stellar
-            science ↗</a>
+            science <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -209,7 +211,7 @@
           <p>At SAO's Fred Lawrence Whipple Observatory in Arizona, four giant mirrors catch ghostly flashes from the
             highest-energy particles in the universe.</p>
           <a class="card-link" href="https://veritas.sao.arizona.edu" target="_blank"
-            rel="noopener">veritas.sao.arizona.edu ↗</a>
+            rel="noopener">veritas.sao.arizona.edu <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -223,7 +225,7 @@
           <p>Robotic telescopes that anyone — student, teacher, or curious mind — can command over the internet.
             Smithsonian science, in everyone's hands.</p>
           <a class="card-link" href="https://mo-www.cfa.harvard.edu/OWN/" target="_blank" rel="noopener">Take a picture
-            tonight ↗</a>
+            tonight <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -237,14 +239,14 @@
           <h3>MMT Observatory</h3>
           <p>A 6.5-meter telescope on Mount Hopkins, Arizona — run jointly by SAO and the University of Arizona —
             hunting exoplanets, supernovae, and the structure of the cosmos.</p>
-          <a class="card-link" href="https://www.mmto.org" target="_blank" rel="noopener">mmto.org ↗</a>
+          <a class="card-link" href="https://www.mmto.org" target="_blank" rel="noopener">mmto.org <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
       <article class="card reveal">
         <div class="card-art">
           <img src="assets/images/card_images/stars.jpg" alt="A child gazing up at the Milky Way" loading="lazy">
-          <img class="card-logo" src="assets/logos/STARS_Logo_Lockup_Horizontal_White.svg" alt="Smithsonian STARS logo">
+          <img class="card-logo" src="assets/logos/STARS_Logo_Lockup_Horizontal_White.svg" alt="">
           <span class="card-tag">Rural Outreach</span>
         </div>
         <div class="card-body">
@@ -253,7 +255,7 @@
             rural and tribal-nation classrooms across America — and keeps supporting those students all the way to
             college research.</p>
           <a class="card-link" href="https://smithsonianstars.si.edu" target="_blank"
-            rel="noopener">smithsonianstars.si.edu ↗</a>
+            rel="noopener">smithsonianstars.si.edu <span aria-hidden="true">↗</span></a>
         </div>
       </article>
 
@@ -261,7 +263,7 @@
         <div class="card-art">
           <img src="assets/images/card_images/astroai.jpg" alt="Visualization of a black hole and relativistic jet"
             loading="lazy">
-          <img class="card-logo" src="assets/logos/astroAI.svg" alt="AstroAI logo">
+          <img class="card-logo" src="assets/logos/astroAI.svg" alt="">
           <span class="card-tag">Artificial Intelligence</span>
         </div>
         <div class="card-body">
@@ -270,7 +272,7 @@
             machines to sift oceans of cosmic data and accelerate discovery, from exoplanet atmospheres to black hole
             physics.</p>
           <a class="card-link" href="https://astroai.cfa.harvard.edu" target="_blank"
-            rel="noopener">astroai.cfa.harvard.edu ↗</a>
+            rel="noopener">astroai.cfa.harvard.edu <span aria-hidden="true">↗</span></a>
         </div>
       </article>
     </div>
@@ -402,12 +404,13 @@
       </p>
       <div class="hero-actions">
         <a class="btn btn-yellow" href="https://www.cfa.harvard.edu" target="_blank" rel="noopener">Visit
-          cfa.harvard.edu ↗</a>
-        <a class="btn btn-ghost" href="https://www.si.edu/research" target="_blank" rel="noopener">Smithsonian Research
-          ↗</a>
+          cfa.harvard.edu <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-ghost" href="https://www.si.edu/research" target="_blank" rel="noopener">Smithsonian Research <span aria-hidden="true">↗</span></a>
       </div>
     </div>
   </section>
+
+  </main>
 
   <!-- ======= Footer ======= -->
   <footer class="site-footer">
