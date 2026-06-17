@@ -1,5 +1,12 @@
 [
   {
+    "title": "Smithsonian STARS Pilots in Arizona",
+    "url": "https://www.cfa.harvard.edu/news/smithsonian-stars-pilots-arizona",
+    "date": "2026-06-10",
+    "label": "News Release",
+    "image": "assets/images/news/news_fd5afdcd8b.jpg"
+  },
+  {
     "title": "Smithsonian Starstruck Makes Its World Premiere in Washington, D.C., Launching an Immersive Journey to the Cosmos",
     "url": "https://www.cfa.harvard.edu/news/smithsonian-starstruck-makes-its-world-premiere-washington-dc-launching-immersive-journey-cosmos",
     "date": "2026-05-28",
@@ -19,12 +26,5 @@
     "date": "2026-05-20",
     "label": "News Release",
     "image": "assets/images/news/news_ab0c82c632.jpg"
-  },
-  {
-    "title": "Astronomers Directly Detect How Turbulence Between Stars Distorts Light",
-    "url": "https://www.cfa.harvard.edu/news/astronomers-directly-detect-how-turbulence-between-stars-distorts-light",
-    "date": "2026-05-13",
-    "label": "News Release",
-    "image": "assets/images/news/news_936505c54b.jpg"
   }
 ]
