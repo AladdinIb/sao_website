@@ -189,7 +189,7 @@ a { color: inherit; }
   transition: opacity 2s ease-in-out;
   will-change: opacity;
 }
-/* No-JS fallback: first slide is visible by default. */
+/* First slide is visible immediately (before JS adds .is-active), avoiding a flash. */
 .hero-slide:first-child { opacity: 1; }
 /* The active slide fades in and slowly drifts (Ken Burns) so a static
    backdrop never feels frozen. */
@@ -202,17 +202,9 @@ a { color: inherit; }
   to   { transform: scale(1.12); }
 }
 
-/* Darkening + vignette so the centred logo and tagline always read,
-   even over the brightest frames (e.g. the galaxy cluster). */
-.hero-slideshow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(120% 90% at 50% 42%, rgba(5, 13, 36, .15) 0%, rgba(5, 13, 36, .55) 70%, rgba(5, 13, 36, .8) 100%),
-    linear-gradient(180deg, rgba(5, 13, 36, .7) 0%, rgba(5, 13, 36, .35) 45%, rgba(5, 13, 36, .75) 100%);
-  pointer-events: none;
-}
+/* No image-wide darkening overlay — backdrops show as-is. Legibility of the
+   centred logo/tagline comes from text-shadows on the text itself (see
+   .hero-title / .hero-sub), which protect the glyphs without tinting the photo. */
 
 /* Image credit / caption — bottom-left, small but readable. */
 .hero-credit {
@@ -306,13 +298,16 @@ a { color: inherit; }
   width: min(320px, 70vw);
   height: auto;
   display: inline-block;
-  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, .35));
+  /* Soft dark halo keeps the white lockup readable over bright frames. */
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .6)) drop-shadow(0 6px 30px rgba(0, 0, 0, .45));
 }
 
 .hero-title {
   font-size: clamp(2.4rem, 6.5vw, 4.6rem);
   font-weight: 700;
   margin-bottom: 1.5rem;
+  /* drop-shadow (not text-shadow) so the gradient "Wonder" span is covered too. */
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, .55));
 }
 
 /* Smithsonian Science blues, tiled A→B→A so the animation loops seamlessly */
@@ -332,9 +327,10 @@ a { color: inherit; }
 
 .hero-sub {
   font-size: clamp(1.02rem, 1.6vw, 1.22rem);
-  color: rgba(255, 255, 255, .82);
+  color: rgba(255, 255, 255, .92);
   max-width: 640px;
   margin: 0 auto 2.4rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .6), 0 2px 16px rgba(0, 0, 0, .5);
 }
 
 .hero-actions {

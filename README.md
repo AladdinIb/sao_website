@@ -27,6 +27,7 @@ assets/
   favicon.svg               Smithsonian sunburst (+ PNG fallbacks)
 scripts/
   add_mosaic_images.sh      Mosaic image pipeline (see below)
+  add_hero_images.sh        Hero slideshow image pipeline (see below)
   update_news.py            CfA news feed scraper (see below)
 .github/workflows/
   update-news.yml           Daily Action that refreshes the news feed
@@ -73,24 +74,44 @@ so it stays out of the keyboard tab order.
 
 ## Hero backdrop slideshow
 
-The landing hero auto-plays a crossfading slideshow of the JPEGs in
-`assets/images/hero_images/`. The slides are listed as `.hero-slide` divs inside
-`.hero-slideshow` in [`index.html`](index.html); each one carries its own background image and a
-`data-credit` string shown verbatim in the small `.hero-credit` caption (bottom-left). Edit the
-`data-credit` text freely to name/credit each image. The slideshow logic lives in `js/main.js`
-(search "Hero backdrop slideshow"): it advances every `SLIDE_MS` (10 s — ~8 s hold + 2 s
-crossfade) with a gentle Ken-Burns zoom on the active frame.
+The landing hero auto-plays a crossfading slideshow of the images in
+`assets/images/hero_images/`. The play order and per-image credit lines live in the
+`HERO_MANIFEST` array in [`js/main.js`](js/main.js) (search "Hero backdrop slideshow") —
+`{ file, credit }` per slide. The page builds the `.hero-slide` layers from it, shows each
+slide's `credit` verbatim in the small `.hero-credit` caption (bottom-left), and advances every
+`SLIDE_MS` (10 s — ~8 s hold + 2 s crossfade) with a gentle Ken-Burns zoom on the active frame.
 
-- **Add/remove/reorder** images by editing the `.hero-slide` list; order on the page = play
-  order, and the first slide is the no-JS fallback (shown via CSS `:first-child`).
-- **Optimize first**: hero frames are ~1920px-wide JPEGs at quality ~72, kept under 500KB
-  (`sips -s format jpeg -s formatOptions 72 --resampleWidth 1920 src.png --out out.jpg`). Original
-  PNGs stay local — `assets/images/hero_images/*.png` is gitignored.
+### Adding / changing images
+
+Just drop image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
+`assets/images/hero_images/` and run:
+
+```bash
+./scripts/add_hero_images.sh          # optimize + refresh the manifest
+./scripts/add_hero_images.sh --push   # ...and commit + push to deploy
+```
+
+The script produces a web-optimized `<name>.jpg` (max 1920px wide, quality auto-stepped down from
+88 to stay under ~500KB) and regenerates `HERO_MANIFEST`. It **preserves the credit text** you've
+written for existing images and gives brand-new ones a placeholder credit to edit. Heavy
+originals stay on disk as masters but are gitignored: the non-jpg you dropped, plus a backup of
+any oversized jpg in `hero_images/originals/`. Removing an image from the folder and re-running
+drops it from the slideshow.
+
+- **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end).
+- **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST`.
 - A small play/pause control (bottom-right) lets visitors stop the rotation; with
   `prefers-reduced-motion` enabled it starts paused on a single frame and the Ken-Burns/crossfade
   animations are disabled. A two-image-minimum guard disables auto-play if only one slide exists.
-- Contrast: a darkening gradient + vignette overlay (`.hero-slideshow::after`) sits between the
-  images and the logo/tagline so text stays legible over any frame — keep it if you swap images.
+
+### Contrast
+
+There is **no darkening overlay** — backdrops show as-is. Legibility of the centred logo/tagline
+comes from text-shadows on the text itself (`.hero-logo img`, `.hero-title`, `.hero-sub`), which
+protect the glyphs without tinting the photo. When swapping in a new image, check it behind the
+title/tagline: very bright, busy frames *centred* behind the text (e.g. a bright ring or galactic
+core dead-centre) are the risk. If one is too low-contrast, drop it rather than re-adding a
+full-image gradient.
 
 ## Adding to the rotating stats
 

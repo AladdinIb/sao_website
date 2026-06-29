@@ -62,13 +62,24 @@
   });
 
   /* ---------- Hero backdrop slideshow ----------
-     Crossfades the hero backdrop every SLIDE_MS. Each .hero-slide carries its
-     own data-credit, shown in .hero-credit. The toggle lets visitors stop it
-     (accessibility); reduced-motion users start paused on a single frame. */
+     Crossfades the hero backdrop every SLIDE_MS. Slides are built from
+     HERO_MANIFEST below — each entry is { file, credit }, with credit shown
+     in .hero-credit. To add/optimize images and regenerate this list, drop
+     them into assets/images/hero_images/ and run scripts/add_hero_images.sh
+     (it preserves the credit text you write here). The toggle lets visitors
+     stop it (accessibility); reduced-motion users start paused on one frame. */
+
+  const HERO_DIR = "assets/images/hero_images/";
+  const HERO_MANIFEST = [
+    { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — the Milky Way over [location]. Credit: [Name / Institution]." },
+    { file: "veritas.jpg", credit: "Placeholder credit — VERITAS telescope under the stars. Credit: [Name / Institution]." },
+    { file: "black_hole.jpg", credit: "Placeholder credit — a black hole and its accretion disk. Credit: [Name / Institution]." },
+    { file: "eht.jpg", credit: "Placeholder credit — the Event Horizon Telescope image of M87*. Credit: [Name / Institution]." },
+    { file: "earth_orbit.jpg", credit: "Placeholder credit — Earth's limb from orbit. Credit: [Name / Institution]." }
+  ];
 
   const slideshow = document.querySelector(".hero-slideshow");
-  if (slideshow) {
-    const slides = Array.from(slideshow.querySelectorAll(".hero-slide"));
+  if (slideshow && HERO_MANIFEST.length) {
     const credit = document.querySelector(".hero-credit");
     const playToggle = document.querySelector(".hero-slideshow-toggle");
     const SLIDE_MS = 10000; // ~8s hold + 2s crossfade — calm, but scrollers still catch a transition
@@ -76,8 +87,17 @@
     let timer = null;
     let playing = false;
 
+    // Build the slide layers from the manifest.
+    const slides = HERO_MANIFEST.map((item) => {
+      const slide = document.createElement("div");
+      slide.className = "hero-slide";
+      slide.style.backgroundImage = `url("${HERO_DIR}${item.file}")`;
+      slideshow.append(slide);
+      return slide;
+    });
+
     const setCredit = (i) => {
-      if (credit) credit.textContent = slides[i].dataset.credit || "";
+      if (credit) credit.textContent = HERO_MANIFEST[i].credit || "";
     };
 
     const show = (i) => {
