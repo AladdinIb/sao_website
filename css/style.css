@@ -523,15 +523,15 @@ a { color: inherit; }
 
 .section-sub { color: var(--ink-soft); font-size: 1.08rem; }
 
-/* ---------- News section + side-by-side expanders ---------- */
+/* ---------- News section + national/global impact ---------- */
 
-.news-section, .expanders {
+.news-section, .impact-section {
   background:
     radial-gradient(1000px 500px at 10% 0%, rgba(22, 96, 207, .07), transparent 60%),
     var(--paper);
 }
 .news-section { padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
-.expanders { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
+.impact-section { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
 
 .inline-link {
   color: var(--si-blue-bright);
@@ -540,212 +540,201 @@ a { color: inherit; }
 }
 .inline-link:hover { text-decoration: underline; }
 
-.expander-headers {
+/* ---------- Horizontal carousels (impact + discoveries) ----------
+   .scroller is the relative wrapper (arrows pinned to its sides); .h-scroll is
+   the single-row track that scrolls. Shared with the news feed below. */
+
+.scroller {
+  position: relative;
   max-width: 1280px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
-  gap: 1.4rem;
 }
 
-.collapse-header {
+.h-scroll {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 1.4rem;
-  background:
-    radial-gradient(420px 220px at 92% -20%, rgba(56, 189, 248, .2), transparent 65%),
-    linear-gradient(135deg, var(--si-blue-deepest) 0%, var(--si-blue) 85%);
-  color: var(--white);
-  border-radius: var(--card-radius);
-  border: 2px solid transparent;
-  padding: 1.6rem 1.8rem;
-  box-shadow: 0 8px 30px rgba(14, 23, 38, .16);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: .6rem;
+  scrollbar-width: none;
+}
+.h-scroll::-webkit-scrollbar { display: none; }
+.h-scroll > * { scroll-snap-align: start; }
+.h-scroll:focus-visible { outline: 2px solid var(--si-cyan); outline-offset: 4px; border-radius: 6px; }
+
+/* Pause/play control above each auto-scrolling carousel (WCAG 2.2.2). */
+.carousel-controls {
+  max-width: 1280px;
+  margin: 0 auto 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.carousel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
+  border: 1px solid rgba(14, 23, 38, .2);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--si-blue);
   cursor: pointer;
-  transition: transform .25s ease, box-shadow .25s ease, border-color .3s ease;
+  box-shadow: 0 2px 10px rgba(14, 23, 38, .08);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
 }
-.collapse-header:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 40px rgba(14, 23, 38, .24);
-}
-.collapse-header.open {
-  border-color: var(--si-yellow);
-}
+.carousel-toggle:hover { transform: translateY(-1px); border-color: var(--si-blue-bright); }
+.carousel-toggle[hidden] { display: none; }
 
-.collapse-head-text .kicker { margin-bottom: .5rem; font-size: .72rem; }
-
-.collapse-toggle {
-  all: unset;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-  font-size: clamp(1.25rem, 2vw, 1.55rem);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.collapse-teaser {
-  margin-top: .55rem;
-  font-size: .9rem;
-  color: rgba(255, 255, 255, .78);
-  max-width: 48ch;
-}
-
-.collapse-icon {
-  flex: none;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: var(--si-yellow);
-  position: relative;
-  transition: transform .45s cubic-bezier(.2, .6, .2, 1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
-}
-.collapse-icon::after {
+/* Two bars (pause) when playing; a play triangle when paused. */
+.carousel-toggle-icon { position: relative; display: block; width: 11px; height: 12px; }
+.carousel-toggle-icon::before,
+.carousel-toggle-icon::after {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 11px;
-  height: 11px;
-  border-right: 3px solid var(--si-blue);
-  border-bottom: 3px solid var(--si-blue);
-  transform: translate(-50%, -65%) rotate(45deg);
+  top: 0;
+  width: 3.2px;
+  height: 12px;
+  background: currentColor;
+  border-radius: 1px;
 }
-.collapse-header.open .collapse-icon { transform: rotate(180deg); }
-
-/* Bodies live below the header pair and expand to full width;
-   smooth open/close via the grid-rows trick. */
-.collapse-body {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows .65s cubic-bezier(.2, .6, .2, 1);
-}
-.collapse-body.open { grid-template-rows: 1fr; }
-
-.collapse-inner {
-  overflow: hidden;
-  min-height: 0;
-  visibility: hidden;
-  transition: visibility 0s .65s;
-}
-.collapse-body.open .collapse-inner {
-  visibility: visible;
-  transition: visibility 0s;
+.carousel-toggle-icon::before { left: 0; }
+.carousel-toggle-icon::after { right: 0; }
+.carousel-toggle[aria-pressed="true"] .carousel-toggle-icon::after { display: none; }
+.carousel-toggle[aria-pressed="true"] .carousel-toggle-icon::before {
+  left: 0;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 11px solid currentColor;
+  border-radius: 0;
 }
 
-/* ---------- Impact: initiative grid ---------- */
+/* ---------- Impact cards ---------- */
 
-.initiative-grid {
-  max-width: 1280px;
-  margin: 2.2rem auto 3.5rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
-  gap: 1.4rem;
-}
+.impact-grid { padding: .4rem .2rem 1rem; }
 
-.initiative-card {
+.impact-card {
+  flex: 0 0 min(380px, 86vw);
+  display: flex;
+  flex-direction: column;
   background:
-    radial-gradient(420px 220px at 90% -10%, rgba(56, 189, 248, .16), transparent 65%),
+    radial-gradient(460px 240px at 88% -12%, rgba(56, 189, 248, .18), transparent 65%),
     linear-gradient(170deg, var(--si-blue-deep) 0%, var(--si-blue) 100%);
   color: var(--white);
   border-radius: var(--card-radius);
-  padding: 1.9rem 2rem 2rem;
-  box-shadow: 0 6px 24px rgba(14, 23, 38, .14);
   border-top: 4px solid var(--si-yellow);
+  padding: 1.8rem 1.9rem 1.5rem;
+  box-shadow: 0 6px 24px rgba(14, 23, 38, .14);
 }
 
-.initiative-tag {
+.impact-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(56, 189, 248, .14);
+  color: var(--si-yellow);
+}
+.impact-icon svg { width: 24px; height: 24px; }
+
+.impact-tag {
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--si-cyan);
-  margin-bottom: .7rem;
+  margin-bottom: .55rem;
 }
 
-.initiative-card h3 {
-  font-size: 1.45rem;
-  margin-bottom: .35rem;
-}
+.impact-card h3 { font-size: 1.42rem; line-height: 1.2; margin-bottom: .35rem; }
 
-.initiative-sub {
-  font-size: .92rem;
+.impact-sub {
+  font-size: .9rem;
   color: var(--si-yellow);
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.2rem;
 }
 
-.initiative-card ul {
+.impact-links {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: .85rem;
+  gap: .6rem;
+  margin-top: auto;
 }
 
-.initiative-card li {
-  font-size: .9rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, .85);
-  padding-left: 1.1rem;
-  position: relative;
+.impact-link {
+  display: block;
+  padding: .7rem .85rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .08);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
 }
-.initiative-card li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .55em;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--si-cyan);
+.impact-link:hover { background: rgba(255, 255, 255, .1); border-color: rgba(56, 189, 248, .5); transform: translateX(2px); }
+.impact-link:focus-visible { outline: 2px solid var(--si-cyan); outline-offset: 2px; }
+
+.impact-link-name {
+  display: block;
+  font-weight: 600;
+  font-size: .98rem;
+  color: var(--white);
+  margin-bottom: .15rem;
 }
-.initiative-card strong { color: var(--white); font-weight: 600; }
-
-/* ---------- Discoveries list ---------- */
-
-.discovery-list {
-  max-width: 1280px;
-  margin: 2.2rem auto 1rem;
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr));
-  gap: 1.2rem 2.4rem;
+.impact-arrow { color: var(--si-cyan); font-weight: 400; }
+.impact-link-desc {
+  display: block;
+  font-size: .84rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, .78);
 }
 
-.discovery {
+/* Flagship links (Minor Planet Center, HITRAN, AstroAI, SciX/ADS) stand out. */
+.impact-link.flagship {
+  background: rgba(56, 189, 248, .12);
+  border-color: rgba(56, 189, 248, .35);
+}
+.impact-link.flagship .impact-link-name { font-size: 1.08rem; color: var(--si-yellow); }
+.impact-link.flagship:hover { background: rgba(56, 189, 248, .2); }
+
+/* ---------- Discovery cards (reuse mission .card visuals) ---------- */
+
+.discovery-grid { padding: .4rem .2rem 1rem; }
+
+.discovery-card {
+  flex: 0 0 min(330px, 82vw);
   display: flex;
-  gap: 1.3rem;
-  align-items: flex-start;
+  flex-direction: column;
   background: var(--white);
   border-radius: var(--card-radius);
-  padding: 1.5rem 1.7rem;
+  overflow: hidden;
   box-shadow: 0 4px 18px rgba(14, 23, 38, .07);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.discovery-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 44px rgba(14, 23, 38, .16);
 }
 
-.discovery-rank {
-  font-family: var(--font-display);
-  font-size: 2.3rem;
-  font-weight: 700;
-  line-height: 1;
-  background: linear-gradient(180deg, var(--si-cyan), #6366f1);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  flex: none;
-  min-width: 2ch;
-}
+.discovery-card .card-art { height: 200px; }
 
-.discovery h3 {
-  font-size: 1.12rem;
-  margin-bottom: .35rem;
-}
-
-.discovery p {
-  font-size: .92rem;
+.discovery-card-body { padding: 1.35rem 1.5rem 1.5rem; display: flex; flex-direction: column; flex: 1; }
+.discovery-card-body h3 { font-size: 1.2rem; line-height: 1.25; margin-bottom: .5rem; }
+.discovery-card-body p { font-size: .92rem; line-height: 1.55; color: var(--ink-soft); flex: 1; }
+.discovery-credit {
+  margin-top: .9rem;
+  font-size: .72rem;
   color: var(--ink-soft);
+  opacity: .8;
 }
 
 /* ---------- Impact: news feed ---------- */

@@ -15,3 +15,11 @@ assets/images/hero_images/*.webp
 assets/images/hero_images/*.tif
 assets/images/hero_images/*.tiff
 assets/images/hero_images/originals/
+
+# Discovery card masters — only the optimized .jpg cards ship.
+assets/images/discoveries/*.png
+assets/images/discoveries/*.heic
+assets/images/discoveries/*.webp
+assets/images/discoveries/*.tif
+assets/images/discoveries/*.tiff
+assets/images/discoveries/originals/

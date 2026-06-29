@@ -316,36 +316,82 @@
     });
   }
 
-  /* ---------- Impact: news feed ----------
+  /* ---------- Horizontal carousel helper ----------
+     Overflow-aware prev/next arrows plus optional auto-advance with a
+     pause/play toggle. Auto-advance and smooth scrolling both respect
+     prefers-reduced-motion. Shared by the news, impact, and discovery rows. */
+
+  const initScroller = (track, opts = {}) => {
+    const { prev, next, toggle, autoplay = false, interval = 6000 } = opts;
+    if (!track) return { update: () => {} };
+
+    const hasOverflow = () => track.scrollWidth > track.clientWidth + 4;
+    const atEnd = () => track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+
+    const update = () => {
+      const overflow = hasOverflow();
+      if (prev) prev.hidden = !overflow || track.scrollLeft <= 4;
+      if (next) next.hidden = !overflow || atEnd();
+      // The pause/play control is only meaningful when the row actually auto-scrolls.
+      if (toggle) toggle.hidden = !(overflow && autoplay && !reduceMotion);
+    };
+
+    const step = () => {
+      const card = track.firstElementChild;
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 22;
+      return card ? card.getBoundingClientRect().width + gap : 320;
+    };
+    const slide = (dir) =>
+      track.scrollBy({ left: dir * step(), behavior: reduceMotion ? "auto" : "smooth" });
+
+    if (prev) prev.addEventListener("click", () => slide(-1));
+    if (next) next.addEventListener("click", () => slide(1));
+    track.addEventListener("scroll", update, { passive: true });
+    new ResizeObserver(update).observe(track);
+    update();
+
+    if (autoplay && !reduceMotion) {
+      let timer = null;
+      let userPaused = false;
+
+      const tick = () =>
+        atEnd() ? track.scrollTo({ left: 0, behavior: "smooth" }) : slide(1);
+      const start = () => {
+        if (timer || userPaused || !hasOverflow()) return;
+        timer = window.setInterval(tick, interval);
+      };
+      const stop = () => { window.clearInterval(timer); timer = null; };
+
+      if (toggle) {
+        toggle.setAttribute("aria-pressed", "false");
+        toggle.addEventListener("click", () => {
+          userPaused = !userPaused;
+          if (userPaused) stop(); else start();
+          toggle.setAttribute("aria-pressed", String(userPaused));
+        });
+      }
+      // Transient pause while the user hovers or keyboard-focuses the row.
+      track.addEventListener("pointerenter", stop);
+      track.addEventListener("pointerleave", start);
+      track.addEventListener("focusin", stop);
+      track.addEventListener("focusout", start);
+
+      start();
+    }
+
+    return { update };
+  };
+
+  /* ---------- News feed ----------
      Rendered from assets/data/news.json, which scripts/update_news.py
      (run daily by a GitHub Action) refreshes from cfa.harvard.edu/news. */
 
   const newsGrid = document.getElementById("news-grid");
   if (newsGrid) {
-    // Arrow buttons appear only when the single-row grid actually overflows
-    const prevBtn = document.querySelector(".news-scroller .scroll-prev");
-    const nextBtn = document.querySelector(".news-scroller .scroll-next");
-
-    const updateScrollButtons = () => {
-      if (!prevBtn || !nextBtn) return;
-      const overflow = newsGrid.scrollWidth > newsGrid.clientWidth + 4;
-      prevBtn.hidden = !overflow || newsGrid.scrollLeft <= 4;
-      nextBtn.hidden = !overflow ||
-        newsGrid.scrollLeft >= newsGrid.scrollWidth - newsGrid.clientWidth - 4;
-    };
-
-    if (prevBtn && nextBtn) {
-      const cardStep = () => {
-        const card = newsGrid.querySelector(".news-card");
-        return card ? card.offsetWidth + 22 : 320;
-      };
-      const slideNews = (dir) =>
-        newsGrid.scrollBy({ left: dir * cardStep(), behavior: reduceMotion ? "auto" : "smooth" });
-      prevBtn.addEventListener("click", () => slideNews(-1));
-      nextBtn.addEventListener("click", () => slideNews(1));
-      newsGrid.addEventListener("scroll", updateScrollButtons, { passive: true });
-      new ResizeObserver(updateScrollButtons).observe(newsGrid);
-    }
+    const newsScroller = initScroller(newsGrid, {
+      prev: document.querySelector(".news-scroller .scroll-prev"),
+      next: document.querySelector(".news-scroller .scroll-next")
+    });
 
     fetch("assets/data/news.json")
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
@@ -370,7 +416,7 @@
           card.querySelector("h3").textContent = item.title;
           newsGrid.append(card);
         }
-        updateScrollButtons();
+        newsScroller.update();
       })
       .catch(() => {
         const fallback = document.createElement("a");
@@ -381,43 +427,86 @@
       });
   }
 
-  /* ---------- Expander cards (Impact, Discoveries) ----------
-     Compact header cards sit side by side; each expands a full-width
-     body below the pair. Accordion: opening one closes the other. The
-     toggle button carries the a11y state; the whole header card is
-     clickable. Collapsed content is inert so it leaves the tab order. */
+  /* ---------- Impact cards carousel ---------- */
 
-  document.querySelectorAll(".expanders").forEach((section) => {
-    const headers = [...section.querySelectorAll(".collapse-header")];
-
-    const partsOf = (header) => {
-      const btn = header.querySelector(".collapse-toggle");
-      return { btn, body: document.getElementById(btn.getAttribute("aria-controls")) };
-    };
-
-    const setOpen = (header, open) => {
-      const { btn, body } = partsOf(header);
-      header.classList.toggle("open", open);
-      body.classList.toggle("open", open);
-      btn.setAttribute("aria-expanded", String(open));
-      body.inert = !open;
-    };
-
-    headers.forEach((header) => {
-      setOpen(header, false);
-      const { btn } = partsOf(header);
-      header.addEventListener("click", (e) => {
-        // Let the button's own activation handle itself (incl. keyboard)
-        if (e.target.closest(".collapse-toggle")) return;
-        btn.click();
-      });
-      btn.addEventListener("click", () => {
-        const willOpen = !header.classList.contains("open");
-        headers.forEach((h) => setOpen(h, false));
-        if (willOpen) setOpen(header, true);
-      });
+  const impactGrid = document.getElementById("impact-grid");
+  if (impactGrid) {
+    initScroller(impactGrid, {
+      prev: document.querySelector(".impact-scroller .scroll-prev"),
+      next: document.querySelector(".impact-scroller .scroll-next"),
+      toggle: document.querySelector('.carousel-toggle[data-carousel="impact"]'),
+      autoplay: true,
+      interval: 7000
     });
-  });
+  }
+
+  /* ---------- SAO Discoveries carousel ----------
+     A rotating, non-ranked showcase. To add one: drop an image into
+     assets/images/discoveries/ and run scripts/add_discovery_images.sh
+     (which appends a stub entry here), then edit its title/blurb/credit.
+     The commented entries below are written and just need a real image. */
+
+  const DISCOVERIES = [
+    { title: "Humanity's first image of a black hole",
+      blurb: "The Event Horizon Telescope, led from SAO, unveiled the glowing ring of M87* in 2019 — then our galaxy's Sagittarius A* in 2022 — turning an untestable idea into an observable object.",
+      image: "black_hole.jpg", credit: "Image: EHT Collaboration" },
+    { title: "Direct evidence for dark matter",
+      blurb: "Chandra's image of the Bullet Cluster caught dark matter sailing ahead of colliding gas — the first direct empirical proof that it exists.",
+      image: "dark_matter.jpg", credit: "X-ray: NASA/CXC/CfA · lensing & optical: NASA/STScI; Magellan" },
+    { title: "Touching the Sun",
+      blurb: "SAO-built instruments aboard Parker Solar Probe sampled the solar wind as the spacecraft crossed into the Sun's corona in 2021 — the first time humanity touched a star.",
+      image: "parker_sun.jpg", credit: "Illustration: NASA/Johns Hopkins APL" },
+    { title: "Opening the X-ray universe",
+      blurb: "From the Einstein Observatory to Chandra, SAO scientists built the field of X-ray astronomy — recognized with the 2002 Nobel Prize — and revealed the hot, violent cosmos.",
+      image: "xray_universe.jpg", credit: "Illustration: NASA/CXC" },
+    { title: "The cosmic web",
+      blurb: "The CfA Redshift Survey produced the first true maps of large-scale structure, discovering the “Great Wall” of galaxies and revealing a universe of filaments and voids.",
+      image: "cosmic_web.jpg", credit: "Visualization: cosmological simulation" },
+    { title: "Weighing and shaping the Earth",
+      blurb: "At the dawn of the Space Age, SAO's worldwide satellite-tracking network pioneered space geodesy — refining Earth's shape and gravity field, laying groundwork for modern GPS.",
+      image: "earth_geodesy.jpg", credit: "Image: NASA" }
+
+    // Ready to go live once a real image is dropped in (see README):
+    // { title: "The accelerating universe",
+    //   blurb: "The High-Z Supernova Search, co-founded at the CfA, found that cosmic expansion is speeding up — revealing dark energy and earning the 2011 Nobel Prize.",
+    //   image: "_placeholder.jpg", credit: "" },
+    // { title: "The first exoplanet atmosphere",
+    //   blurb: "CfA astronomers watched HD 209458 b cross its star in 1999, then detected sodium in its air — founding the science of exoplanet characterization.",
+    //   image: "_placeholder.jpg", credit: "" },
+    // { title: "Comets are icy worlds",
+    //   blurb: "SAO director Fred Whipple's 1950 “dirty snowball” model explained what comets actually are — and has guided every comet mission since.",
+    //   image: "_placeholder.jpg", credit: "" },
+    // { title: "The fourth test of general relativity",
+    //   blurb: "SAO director Irwin Shapiro predicted and measured the delay of radar signals grazing the Sun — a fundamental test of Einstein's theory that now bears his name.",
+    //   image: "_placeholder.jpg", credit: "" }
+  ];
+
+  const discoveryGrid = document.getElementById("discovery-grid");
+  if (discoveryGrid && DISCOVERIES.length) {
+    const DISCOVERY_DIR = "assets/images/discoveries/";
+    for (const d of DISCOVERIES) {
+      const card = document.createElement("article");
+      card.className = "discovery-card";
+      card.innerHTML = `
+        <div class="card-art"><img src="${DISCOVERY_DIR}${d.image}" alt="" loading="lazy"></div>
+        <div class="discovery-card-body">
+          <h3></h3>
+          <p></p>
+          ${d.credit ? '<p class="discovery-credit"></p>' : ""}
+        </div>`;
+      card.querySelector("h3").textContent = d.title;
+      card.querySelector(".discovery-card-body > p:not(.discovery-credit)").textContent = d.blurb;
+      if (d.credit) card.querySelector(".discovery-credit").textContent = d.credit;
+      discoveryGrid.append(card);
+    }
+    initScroller(discoveryGrid, {
+      prev: document.querySelector(".discovery-scroller .scroll-prev"),
+      next: document.querySelector(".discovery-scroller .scroll-next"),
+      toggle: document.querySelector('.carousel-toggle[data-carousel="discovery"]'),
+      autoplay: true,
+      interval: 6000
+    });
+  }
 
   /* ---------- Timeline progress line ---------- */
 

@@ -13,12 +13,13 @@ index.html                  Single-page site (hero, stats, impact, missions, his
 css/style.css               All styles; brand colors as CSS variables in :root
 js/main.js                  Interactions: nav, scroll reveals, hero slideshow,
                             rotating stat, photo mosaic, news feed,
-                            initiatives carousel, timeline
+                            impact + discoveries carousels, timeline
 assets/
   logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI (SVG)
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
+    discoveries/            SAO Discoveries carousel cards (1080x620 JPEGs)
     hero_images/            Hero backdrop slideshow frames (~1920px wide JPEGs)
     history_images/         Timeline photos
     mosaic/                 600x600 tiles for the rotating stats mosaic
@@ -28,6 +29,7 @@ assets/
 scripts/
   add_mosaic_images.sh      Mosaic image pipeline (see below)
   add_hero_images.sh        Hero slideshow image pipeline (see below)
+  add_discovery_images.sh   Discoveries carousel image pipeline (see below)
   update_news.py            CfA news feed scraper (see below)
 .github/workflows/
   update-news.yml           Daily Action that refreshes the news feed
@@ -62,15 +64,42 @@ The cards always render as a single row: when the viewport can't fit them all, t
 horizontally (hidden scrollbar, scroll-snap) behind circular arrow buttons that appear only when
 there is actually overflow in that direction.
 
-## Collapsible sections (Impact & Top Ten Discoveries)
+## "Our National & Global Impact" section (#impact)
 
-"News from the Smithsonian Astrophysical Observatory" (#news) is always visible; below it,
-"Science in service to the nation" and "Ten discoveries that changed the universe" are compact
-banner cards sitting side by side (#impact section). Clicking a banner (or its button) expands
-that card's content to full width beneath the pair — accordion style, so opening one closes the
-other. The initiative cards and the discoveries list are plain HTML in `index.html`
-(`.initiative-card`, `.discovery`) — edit or add entries there. Collapsed content is `inert`,
-so it stays out of the keyboard tab order.
+Two always-visible horizontal carousels, both auto-advancing and user-controllable. They share
+one helper, `initScroller(track, { prev, next, toggle, autoplay, interval })` in `js/main.js`:
+overflow-aware ‹ › arrows, optional auto-advance that loops back at the end, a pause/play toggle,
+and a transient pause on hover/keyboard-focus. Everything is disabled under
+`prefers-reduced-motion` (no auto-scroll; arrows still work) and the news feed reuses the same
+helper with autoplay off. Markup pattern per carousel: `.scroller` wrapper › `.scroll-btn`
+arrows + `.h-scroll` track, with a `.carousel-toggle` in a `.carousel-controls` row above it.
+
+**Impact cards** are plain HTML `.impact-card`s in `index.html` (`#impact-grid`) — edit them there.
+Each item is an `.impact-link` (whole bullet is a clickable external link with title + description);
+the four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
+treatment. Each card has a small inline-SVG `.impact-icon`. **Keep the outbound URLs working** —
+they point at real resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, etc.).
+
+**SAO Discoveries** (`#discovery-grid`) is data-driven from the `DISCOVERIES` array in `js/main.js`
+(`{ title, blurb, image, credit }`), rendered as image-topped cards reusing the mission `.card-art`
+visual. It is a curated showcase, not a ranking. To add one:
+
+1. Drop an image (any size/format) into `assets/images/discoveries/` and run:
+
+   ```bash
+   ./scripts/add_discovery_images.sh          # crop to 1080x620, <500KB, append a stub entry
+   ./scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
+   ```
+
+   The script center-crops to the 1080×620 card shape (quality auto-stepped under ~500KB) and
+   appends a stub `{ title, blurb, image, credit }` to `DISCOVERIES` for any image not yet
+   referenced; existing entries and the commented "ready to go live" block are left untouched.
+   Heavy originals stay gitignored (non-jpg masters + `discoveries/originals/`).
+2. Edit the stub's `title` / `blurb` / `credit` in `js/main.js`. Reorder by moving array entries.
+
+Four discoveries (accelerating universe, first exoplanet atmosphere, comets-are-icy-worlds, Shapiro
+delay) are written but commented out in `DISCOVERIES`, awaiting real imagery — uncomment once a
+suitable image is added. `_placeholder.jpg` is a neutral fallback for any entry without its own image.
 
 ## Hero backdrop slideshow
 
@@ -153,8 +182,10 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
-- **Motion** — with `prefers-reduced-motion` enabled, reveals/starfield/mosaic/stat rotation and
-  the hero slideshow all go static (the slideshow starts paused on one frame).
+- **Motion** — with `prefers-reduced-motion` enabled, reveals/starfield/mosaic/stat rotation, the
+  hero slideshow, and the impact/discoveries carousels all go static (the slideshow starts paused on
+  one frame; carousels don't auto-advance but arrows still work). Auto-advancing carousels also
+  carry a visible pause/play control (WCAG 2.2.2).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
 
