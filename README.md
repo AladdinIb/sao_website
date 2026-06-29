@@ -20,6 +20,7 @@ assets/
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
     discoveries/            SAO Discoveries carousel cards (1080x620 JPEGs)
+    impact/                 Impact card top images (800x360 JPEGs, fade into card)
     hero_images/            Hero backdrop slideshow frames (~1920px wide JPEGs)
     history_images/         Timeline photos
     mosaic/                 600x600 tiles for the rotating stats mosaic
@@ -79,6 +80,13 @@ Each item is an `.impact-link` (whole bullet is a clickable external link with t
 the four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
 treatment. Each card has a small inline-SVG `.impact-icon`. **Keep the outbound URLs working** —
 they point at real resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, etc.).
+
+Each card opens with a full-bleed `.impact-art` top image (set via inline `background-image`) that
+fades into the card's navy via the `.impact-art::after` gradient. Images live in
+`assets/images/impact/` (800×360 JPEGs: `defending`, `ai`, `xray`, `leadership`, `value`). To swap
+one, replace the file (keep the name) or point the card's `background-image` at a new file —
+optimize to ~800px wide / under ~150KB first. Cards are variable-height and top-anchored
+(`.impact-grid { align-items: flex-start }`).
 
 **SAO Discoveries** (`#discovery-grid`) is data-driven from the `DISCOVERIES` array in `js/main.js`
 (`{ title, blurb, image, credit }`), rendered as image-topped cards reusing the mission `.card-art`
