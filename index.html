@@ -61,6 +61,23 @@
 
   <!-- ======= Hero ======= -->
   <section class="hero">
+    <!-- Auto-playing backdrop slideshow. Slides crossfade; first slide is the
+         no-JS fallback (opacity 1 in CSS). Edit data-credit text freely — it is
+         shown verbatim in the .hero-credit line. -->
+    <div class="hero-slideshow" aria-hidden="true">
+      <div class="hero-slide" style="background-image:url('assets/images/hero_images/milkyway_backdrop.jpg')"
+        data-credit="Placeholder credit — the Milky Way over [location]. Credit: [Name / Institution]."></div>
+      <div class="hero-slide" style="background-image:url('assets/images/hero_images/veritas.jpg')"
+        data-credit="Placeholder credit — VERITAS telescope under the stars. Credit: [Name / Institution]."></div>
+      <div class="hero-slide" style="background-image:url('assets/images/hero_images/cluster.jpg')"
+        data-credit="Placeholder credit — a JWST galaxy cluster. Credit: [Name / Institution]."></div>
+      <div class="hero-slide" style="background-image:url('assets/images/hero_images/black_hole.jpg')"
+        data-credit="Placeholder credit — a black hole and its accretion disk. Credit: [Name / Institution]."></div>
+      <div class="hero-slide" style="background-image:url('assets/images/hero_images/eht.jpg')"
+        data-credit="Placeholder credit — the Event Horizon Telescope image of M87*. Credit: [Name / Institution]."></div>
+      <div class="hero-slide" style="background-image:url('assets/images/hero_images/earth_orbit.jpg')"
+        data-credit="Placeholder credit — Earth's limb from orbit. Credit: [Name / Institution]."></div>
+    </div>
     <div class="hero-content">
       <div class="hero-logo reveal">
         <img src="assets/logos/si_AO_rgb_vertical_color-reversed.svg" alt="Smithsonian Astrophysical Observatory">
@@ -73,6 +90,11 @@
         <a class="btn btn-ghost" href="#history">Our Story Since 1890</a>
       </div>
     </div>
+    <p class="hero-credit" aria-live="off"></p>
+    <button class="hero-slideshow-toggle" type="button" aria-pressed="false"
+      aria-label="Pause background slideshow">
+      <span class="hero-toggle-icon" aria-hidden="true"></span>
+    </button>
     <a class="scroll-hint" href="#stats" aria-label="Scroll down">
       <span class="chevron"></span>
     </a>

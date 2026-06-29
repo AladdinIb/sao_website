@@ -11,13 +11,15 @@ Deployed via GitHub Pages from the `main` branch root — every push to `main` g
 ```
 index.html                  Single-page site (hero, stats, impact, missions, history, CfA, footer)
 css/style.css               All styles; brand colors as CSS variables in :root
-js/main.js                  Interactions: nav, scroll reveals, rotating stat,
-                            photo mosaic, news feed, initiatives carousel, timeline
+js/main.js                  Interactions: nav, scroll reveals, hero slideshow,
+                            rotating stat, photo mosaic, news feed,
+                            initiatives carousel, timeline
 assets/
   logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI (SVG)
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
+    hero_images/            Hero backdrop slideshow frames (~1920px wide JPEGs)
     history_images/         Timeline photos
     mosaic/                 600x600 tiles for the rotating stats mosaic
     mosaic_sources/         Raw drop folder for new mosaic images (gitignored)
@@ -69,6 +71,27 @@ other. The initiative cards and the discoveries list are plain HTML in `index.ht
 (`.initiative-card`, `.discovery`) — edit or add entries there. Collapsed content is `inert`,
 so it stays out of the keyboard tab order.
 
+## Hero backdrop slideshow
+
+The landing hero auto-plays a crossfading slideshow of the JPEGs in
+`assets/images/hero_images/`. The slides are listed as `.hero-slide` divs inside
+`.hero-slideshow` in [`index.html`](index.html); each one carries its own background image and a
+`data-credit` string shown verbatim in the small `.hero-credit` caption (bottom-left). Edit the
+`data-credit` text freely to name/credit each image. The slideshow logic lives in `js/main.js`
+(search "Hero backdrop slideshow"): it advances every `SLIDE_MS` (10 s — ~8 s hold + 2 s
+crossfade) with a gentle Ken-Burns zoom on the active frame.
+
+- **Add/remove/reorder** images by editing the `.hero-slide` list; order on the page = play
+  order, and the first slide is the no-JS fallback (shown via CSS `:first-child`).
+- **Optimize first**: hero frames are ~1920px-wide JPEGs at quality ~72, kept under 500KB
+  (`sips -s format jpeg -s formatOptions 72 --resampleWidth 1920 src.png --out out.jpg`). Original
+  PNGs stay local — `assets/images/hero_images/*.png` is gitignored.
+- A small play/pause control (bottom-right) lets visitors stop the rotation; with
+  `prefers-reduced-motion` enabled it starts paused on a single frame and the Ken-Burns/crossfade
+  animations are disabled. A two-image-minimum guard disables auto-play if only one slide exists.
+- Contrast: a darkening gradient + vignette overlay (`.hero-slideshow::after`) sits between the
+  images and the logo/tagline so text stays legible over any frame — keep it if you swap images.
+
 ## Adding to the rotating stats
 
 Edit the `ROTATING_STATS` array near the top of [`js/main.js`](js/main.js):
@@ -109,8 +132,8 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
-- **Motion** — with `prefers-reduced-motion` enabled, reveals/starfield/mosaic/stat rotation all
-  go static.
+- **Motion** — with `prefers-reduced-motion` enabled, reveals/starfield/mosaic/stat rotation and
+  the hero slideshow all go static (the slideshow starts paused on one frame).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
 

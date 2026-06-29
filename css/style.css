@@ -167,11 +167,131 @@ a { color: inherit; }
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(5, 13, 36, .6) 0%, rgba(5, 13, 36, .2) 45%, rgba(5, 13, 36, .7) 100%),
-    url("../assets/images/milkyway_backdrop.jpg") center / cover no-repeat,
-    var(--si-blue-deepest);
+  background: var(--si-blue-deepest);
   color: var(--white);
+}
+
+/* ----- Backdrop slideshow ----- */
+.hero-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 2s ease-in-out;
+  will-change: opacity;
+}
+/* No-JS fallback: first slide is visible by default. */
+.hero-slide:first-child { opacity: 1; }
+/* The active slide fades in and slowly drifts (Ken Burns) so a static
+   backdrop never feels frozen. */
+.hero-slide.is-active {
+  opacity: 1;
+  animation: hero-kenburns 14s ease-out forwards;
+}
+@keyframes hero-kenburns {
+  from { transform: scale(1.04); }
+  to   { transform: scale(1.12); }
+}
+
+/* Darkening + vignette so the centred logo and tagline always read,
+   even over the brightest frames (e.g. the galaxy cluster). */
+.hero-slideshow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 42%, rgba(5, 13, 36, .15) 0%, rgba(5, 13, 36, .55) 70%, rgba(5, 13, 36, .8) 100%),
+    linear-gradient(180deg, rgba(5, 13, 36, .7) 0%, rgba(5, 13, 36, .35) 45%, rgba(5, 13, 36, .75) 100%);
+  pointer-events: none;
+}
+
+/* Image credit / caption — bottom-left, small but readable. */
+.hero-credit {
+  position: absolute;
+  left: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 1.6rem);
+  z-index: 3;
+  max-width: min(60ch, 70vw);
+  margin: 0;
+  font-size: .72rem;
+  line-height: 1.35;
+  letter-spacing: .01em;
+  color: rgba(255, 255, 255, .82);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .85);
+  text-align: left;
+  transition: opacity .8s ease;
+}
+
+/* Play / pause control — bottom-right, small and unobtrusive. */
+.hero-slideshow-toggle {
+  position: absolute;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 1.6rem);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 999px;
+  background: rgba(5, 13, 36, .45);
+  backdrop-filter: blur(6px);
+  color: var(--white);
+  cursor: pointer;
+  transition: background .22s ease, border-color .22s ease, transform .22s ease;
+}
+.hero-slideshow-toggle:hover {
+  background: rgba(5, 13, 36, .7);
+  border-color: rgba(255, 255, 255, .6);
+  transform: translateY(-1px);
+}
+
+/* Pause icon (two bars) when playing; swaps to a play triangle when paused. */
+.hero-toggle-icon {
+  position: relative;
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+.hero-toggle-icon::before,
+.hero-toggle-icon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 3.5px;
+  height: 12px;
+  background: currentColor;
+  border-radius: 1px;
+}
+.hero-toggle-icon::before { left: 1px; }
+.hero-toggle-icon::after  { right: 1px; }
+/* Paused state → show a single play triangle. */
+.hero-slideshow-toggle[aria-pressed="true"] .hero-toggle-icon::after { display: none; }
+.hero-slideshow-toggle[aria-pressed="true"] .hero-toggle-icon::before {
+  left: 1px;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 11px solid currentColor;
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition: none; transform: none; }
+  .hero-slide.is-active { animation: none; transform: none; }
 }
 
 .hero-content {

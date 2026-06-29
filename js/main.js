@@ -61,6 +61,68 @@
     revealObserver.observe(el);
   });
 
+  /* ---------- Hero backdrop slideshow ----------
+     Crossfades the hero backdrop every SLIDE_MS. Each .hero-slide carries its
+     own data-credit, shown in .hero-credit. The toggle lets visitors stop it
+     (accessibility); reduced-motion users start paused on a single frame. */
+
+  const slideshow = document.querySelector(".hero-slideshow");
+  if (slideshow) {
+    const slides = Array.from(slideshow.querySelectorAll(".hero-slide"));
+    const credit = document.querySelector(".hero-credit");
+    const playToggle = document.querySelector(".hero-slideshow-toggle");
+    const SLIDE_MS = 10000; // ~8s hold + 2s crossfade — calm, but scrollers still catch a transition
+    let idx = 0;
+    let timer = null;
+    let playing = false;
+
+    const setCredit = (i) => {
+      if (credit) credit.textContent = slides[i].dataset.credit || "";
+    };
+
+    const show = (i) => {
+      slides[idx].classList.remove("is-active");
+      idx = i;
+      // Re-trigger the Ken Burns animation on the newly active slide.
+      slides[idx].classList.add("is-active");
+      setCredit(idx);
+    };
+
+    const next = () => show((idx + 1) % slides.length);
+
+    const play = () => {
+      if (playing || slides.length < 2) return;
+      playing = true;
+      timer = window.setInterval(next, SLIDE_MS);
+      if (playToggle) {
+        playToggle.setAttribute("aria-pressed", "false");
+        playToggle.setAttribute("aria-label", "Pause background slideshow");
+      }
+    };
+
+    const pause = () => {
+      playing = false;
+      window.clearInterval(timer);
+      if (playToggle) {
+        playToggle.setAttribute("aria-pressed", "true");
+        playToggle.setAttribute("aria-label", "Play background slideshow");
+      }
+    };
+
+    slides[0].classList.add("is-active");
+    setCredit(0);
+
+    if (playToggle) {
+      playToggle.addEventListener("click", () => (playing ? pause() : play()));
+    }
+
+    if (reduceMotion || slides.length < 2) {
+      pause();
+    } else {
+      play();
+    }
+  }
+
   /* ---------- Rotating lead stat ----------
      Numbers (with optional "+") count up each time they appear;
      word stats ("Two", "Thousands") slide in as text. */
