@@ -79,16 +79,20 @@ arrows + `.h-scroll` track, with a `.carousel-toggle` in a `.carousel-controls` 
 Each item is an `.impact-link` (whole bullet is a clickable external link with title + description);
 the four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
 treatment. The AstroAI and SciX flagship links additionally carry `.has-logo` and show the brand
-SVG (`assets/logos/astroAI.svg`, `assets/logos/scix_light.svg` — the light variant for the dark
-card) in place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix`.
-**Keep the outbound URLs working** — they point at real resources (MPC, HITRAN, AstroAI,
-scixplorer.org, chandra.si.edu, etc.).
+SVG (`assets/logos/astroAI_without_encoder.svg`, `assets/logos/scix_light.svg` — the light variant
+for the dark card) in place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix`.
+The STARS card shows its logo as the *card title* instead: an `<img class="impact-title-logo">`
+(`STARS_Logo_Lockup_Horizontal_White.svg`) wrapped in the `<h3 class="has-logo-title">` so the
+heading outline and accessible name are preserved. **Keep the outbound URLs working** — they point
+at real resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering,
+science-education-department, etc.).
 
 Each card opens with a full-bleed `.impact-art` top image (set via inline `background-image`) that
-fades into the card's navy via the `.impact-art::after` gradient. Images live in
-`assets/images/impact/` (800×360 JPEGs: `defending`, `ai`, `xray`, `leadership`, `value`). To swap
-one, replace the file (keep the name) or point the card's `background-image` at a new file —
-optimize to ~800px wide / under ~150KB first. Cards are variable-height and top-anchored
+fades into the card's navy via a `mask-image` (the image itself fades to transparent so the card's
+own background shows through — no seam). Images live in `assets/images/impact/` (800×360 JPEGs:
+`leadership`, `defending`, `ai`, `xray`, `engineering`, `stars`, `education`). To swap one, replace
+the file (keep the name) or point the card's `background-image` at a new file — optimize to ~800px
+wide / under ~150KB first. Cards are variable-height and top-anchored
 (`.impact-grid { align-items: flex-start }`).
 
 **SAO Discoveries** (`#discovery-grid`) is data-driven from the `DISCOVERIES` array in `js/main.js`
