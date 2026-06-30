@@ -706,6 +706,23 @@ a { color: inherit; }
 .impact-link.flagship .impact-link-name { font-size: 1.08rem; color: var(--si-yellow); }
 .impact-link.flagship:hover { background: rgba(56, 189, 248, .2); }
 
+/* Brand-logo flagship links (AstroAI, NASA SciX) — logo in place of the title. */
+.impact-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .5rem;
+}
+.impact-logo {
+  width: auto;
+  display: block;
+}
+/* Sized individually: the AstroAI lockup's wordmark is a small part of a tall
+   graphic, so it needs more height than the tighter SciX lockup to read. */
+.impact-logo-astroai { height: 44px; }
+.impact-logo-scix { height: 26px; }
+
 /* ---------- Discovery cards (reuse mission .card visuals) ---------- */
 
 .discovery-grid { padding: .4rem .2rem 1rem; }

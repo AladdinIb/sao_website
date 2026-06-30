@@ -15,7 +15,7 @@ js/main.js                  Interactions: nav, scroll reveals, hero slideshow,
                             rotating stat, photo mosaic, news feed,
                             impact + discoveries carousels, timeline
 assets/
-  logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI (SVG)
+  logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI, NASA SciX (SVG)
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
@@ -78,8 +78,11 @@ arrows + `.h-scroll` track, with a `.carousel-toggle` in a `.carousel-controls` 
 **Impact cards** are plain HTML `.impact-card`s in `index.html` (`#impact-grid`) — edit them there.
 Each item is an `.impact-link` (whole bullet is a clickable external link with title + description);
 the four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
-treatment. Each card has a small inline-SVG `.impact-icon`. **Keep the outbound URLs working** —
-they point at real resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, etc.).
+treatment. The AstroAI and SciX flagship links additionally carry `.has-logo` and show the brand
+SVG (`assets/logos/astroAI.svg`, `assets/logos/scix_light.svg` — the light variant for the dark
+card) in place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix`.
+**Keep the outbound URLs working** — they point at real resources (MPC, HITRAN, AstroAI,
+scixplorer.org, chandra.si.edu, etc.).
 
 Each card opens with a full-bleed `.impact-art` top image (set via inline `background-image`) that
 fades into the card's navy via the `.impact-art::after` gradient. Images live in
