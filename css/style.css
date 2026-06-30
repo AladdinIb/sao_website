@@ -721,11 +721,7 @@ a { color: inherit; }
 /* Sized individually so each wordmark reads at a comfortable size. */
 .impact-logo-astroai { height: 32px; }
 .impact-logo-scix { height: 26px; }
-
-/* A brand logo used as a card's title (e.g. STARS), kept in an <h3> for the
-   heading outline (its accessible name comes from the img alt). */
-.has-logo-title { margin: 0 0 .55rem; line-height: 0; }
-.impact-title-logo { height: 42px; width: auto; display: block; }
+.impact-logo-stars { height: 30px; }
 
 /* ---------- Discovery cards (reuse mission .card visuals) ---------- */
 
