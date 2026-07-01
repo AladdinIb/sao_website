@@ -79,13 +79,13 @@
     light: "assets/logos/si_AO_rgb_verical_color.svg"           // colour lockup w/ dark wordmark
   };
   const HERO_MANIFEST = [
-    { file: "spt.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
     { file: "veritas.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
     { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
     { file: "chandra_launch.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
     { file: "galactic_center.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
     { file: "mmt.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
-    { file: "sma.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
+    { file: "sma.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "Screenshot 2026-07-01 at 4.12.49 PM.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
   ];
 
   const slideshow = document.querySelector(".hero-slideshow");
