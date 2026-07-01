@@ -235,8 +235,6 @@ a { color: inherit; }
   background: rgba(5, 13, 36, .45);
   backdrop-filter: blur(6px);
   color: var(--white);
-  font-size: 1.4rem;
-  line-height: 1;
   cursor: pointer;
   transition: background .22s ease, border-color .22s ease, transform .22s ease;
 }
@@ -244,6 +242,24 @@ a { color: inherit; }
   background: rgba(5, 13, 36, .7);
   border-color: rgba(255, 255, 255, .6);
   transform: translateY(-1px);
+}
+.hero-prev .icon-chevron { transform: rotate(90deg); }
+.hero-next .icon-chevron { transform: rotate(-90deg); }
+
+/* Shared chevron icon — hero arrows, carousel scroll arrows, and the
+   accordion disclosure indicator. An SVG (not a text glyph) so it rotates
+   around its own true visual center: text glyphs like ‹ › ⌄ have uneven
+   font side-bearings that make them look off-center, and worse, shift
+   sideways when rotated. Base shape points down; rotate per use. */
+.icon-chevron {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -364,7 +380,7 @@ a { color: inherit; }
     url("../assets/images/bullet_cluster_backdrop.jpg") center / cover no-repeat,
     var(--si-blue-deepest);
   color: var(--white);
-  padding: clamp(3.5rem, 7vw, 6rem) clamp(1.2rem, 5vw, 4rem);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.2rem, 5vw, 4rem);
 }
 
 .stats-inner {
@@ -461,7 +477,7 @@ a { color: inherit; }
 
 /* ---------- Sections ---------- */
 
-.section { padding: clamp(4rem, 9vw, 7rem) clamp(1.2rem, 5vw, 4rem); }
+.section { padding: clamp(3rem, 6vw, 5rem) clamp(1.2rem, 5vw, 4rem); }
 
 .section-head {
   max-width: 760px;
@@ -592,6 +608,10 @@ a { color: inherit; }
   gap: .9rem;
 }
 
+/* Breathing room before the SAO Discoveries sub-section that follows the
+   accordion within the same section (they're related but visually distinct). */
+.discoveries { margin-top: clamp(3rem, 6vw, 4.5rem); }
+
 /* Each themed row: navy card with a yellow top accent, echoing the old cards. */
 .impact-item {
   background:
@@ -651,13 +671,17 @@ a { color: inherit; }
   flex: 0 0 auto;
   align-self: center;
   padding-right: 1.4rem;
-  font-size: 1.5rem;
-  line-height: 1;
   color: rgba(255, 255, 255, .55);
-  transition: transform .3s ease, color .25s ease;
+  transition: color .25s ease;
+}
+.impact-acc-chev .icon-chevron {
+  width: 20px;
+  height: 20px;
+  transition: transform .3s ease;
 }
 .impact-accordion.js .impact-acc-chev { display: block; }
-.impact-item.open .impact-acc-chev { transform: rotate(180deg); color: var(--si-yellow); }
+.impact-item.open .impact-acc-chev { color: var(--si-yellow); }
+.impact-item.open .impact-acc-chev .icon-chevron { transform: rotate(180deg); }
 .impact-acc-header:hover .impact-acc-chev { color: var(--si-cyan); }
 
 /* Body animates open via grid-template-rows 0fr -> 1fr; inner clips the overflow. */
@@ -812,20 +836,23 @@ a { color: inherit; }
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 46px;
   height: 46px;
   border-radius: 50%;
   border: none;
   background: var(--si-blue);
   color: var(--white);
-  font-size: 1.7rem;
-  line-height: 1;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(14, 23, 38, .3);
   transition: background .2s ease;
 }
 .scroll-btn:hover { background: var(--si-blue-bright); }
 .scroll-btn[hidden] { display: none; }
+.scroll-prev .icon-chevron { transform: rotate(90deg); }
+.scroll-next .icon-chevron { transform: rotate(-90deg); }
 .scroll-prev { left: -15px; }
 .scroll-next { right: -15px; }
 

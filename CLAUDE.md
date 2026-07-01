@@ -60,6 +60,21 @@ exist and is NOT this site).
   NOTE: rAF-driven animation (incl. smooth scrolling) stalls in the preview tool's
   throttled background window; also preview_click double-fires on elements with click
   handlers (toggles open+shut) — use element.click() via preview_eval to test toggles.
+- Arrow/chevron icons (hero prev/next, carousel `.scroll-btn`s, accordion `.impact-acc-chev`)
+  are all one shared `.icon-chevron` inline SVG (a simple `<polyline>`, points down by default),
+  rotated per direction with CSS `transform: rotate()`. Never go back to text glyphs (‹ › ⌄) for
+  these — font glyphs have uneven side-bearings, so they render off-center in a flex-centered
+  circle and visibly shift sideways when rotated (this happened to both the hero arrows and the
+  accordion chevron). The SVG's own point geometry is bounding-box-symmetric, so it stays
+  centered under any rotation.
+- Section vertical spacing follows one scale: base `.section { padding: clamp(3rem, 6vw, 5rem) ... }`
+  (also mirrored explicitly on `.stats`, which isn't `.section`-classed) is used for every
+  "topic change" boundary (stats→news, missions→history, history→cfa, etc.). The one exception is
+  news→impact, which is intentionally half that (`clamp(1.5rem, 3vw, 2.5rem)` on each side) because
+  those two are meant to read as one continuous flow rather than a hard break. Within the impact
+  section, `.discoveries { margin-top: clamp(3rem, 6vw, 4.5rem); }` gives the "Our Discoveries"
+  sub-section breathing room from the accordion above it. If you add a new section, let it inherit
+  the base padding rather than inventing a new value — that consistency was a deliberate fix.
 - The mobile nav overlay is a fixed-position child of the header: never put
   `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
   block and pins the overlay inside the 60px bar — the frosted background lives on
