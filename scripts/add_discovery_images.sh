@@ -1,26 +1,30 @@
 #!/bin/bash
-# add_discovery_images.sh — optimize SAO Discoveries card images and stub the list.
+# add_discovery_images.sh — optimize images for "Our Top Discoveries".
 #
 # Drop image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
 #   assets/images/discoveries/
 # then run:
-#   ./scripts/add_discovery_images.sh          # optimize + append stub entries
+#   ./scripts/add_discovery_images.sh          # optimize in place
 #   ./scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
 #
-# Each image is center-cropped to a 1080x620 card JPEG (quality auto-stepped to
-# stay under ~500KB). For any image not yet referenced in the DISCOVERIES array
-# in js/main.js, a stub entry { title, blurb, image, credit } is appended for you
-# to fill in. Existing entries (and the commented "ready to go live" block) are
-# left untouched. Heavy originals stay on disk as gitignored masters.
+# Each image is center-cropped to 800x360 JPEG (quality auto-stepped to stay
+# under ~500KB) — the same aspect used by assets/images/impact/*.jpg, since
+# both the accordion header art and the discovery-row thumbnails share that
+# convention (see .impact-acc-art / .discovery-row-art in css/style.css).
+#
+# "Our Top Discoveries" is now static HTML (index.html, inside #impact-accordion,
+# the last .impact-item) — there's no DISCOVERIES JS array to stub anymore.
+# After running this script, add or update the matching <li class="discovery-row">
+# by hand with the new filename, title, blurb, and credit.
+# Heavy originals stay on disk as gitignored masters.
 
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DISC="$REPO/assets/images/discoveries"
 ORIG="$DISC/originals"
-MAINJS="$REPO/js/main.js"
 
-CW=1080; CH=620
+CW=800; CH=360
 MAX_BYTES=512000
 QUALITIES=(82 78 74 70 66)
 
@@ -61,11 +65,10 @@ for src in "$DISC"/*.{png,heic,webp,tif,tiff}; do
   count=$((count + 1))
 done
 
-# Pass 2: standalone jpgs (not the shared placeholder, not a pass-1 output) that
-# aren't already card-sized -> crop in place, backing up the original first.
+# Pass 2: standalone jpgs (not a pass-1 output) that aren't already the right
+# size -> crop in place, backing up the original first.
 for src in "$DISC"/*.{jpg,jpeg}; do
   base=$(basename "$src"); base=${base%.*}
-  [ "$base" = "_placeholder" ] && continue
   for m in "$DISC/$base".{png,heic,webp,tif,tiff}; do [ -f "$m" ] && continue 2; done
   w=$(sips -g pixelWidth "$src" | awk '/pixelWidth/{print $2}')
   h=$(sips -g pixelHeight "$src" | awk '/pixelHeight/{print $2}')
@@ -78,47 +81,17 @@ for src in "$DISC"/*.{jpg,jpeg}; do
 done
 shopt -u nullglob nocaseglob
 
-# Append stub entries for any card image not yet referenced in DISCOVERIES.
-python3 - "$MAINJS" "$DISC" <<'EOF'
-import re, sys, json, pathlib
-mainjs, disc = sys.argv[1], pathlib.Path(sys.argv[2])
-present = [p.name for p in sorted(disc.glob("*.jpg")) if p.name != "_placeholder.jpg"]
-
-src = open(mainjs).read()
-m = re.search(r"const DISCOVERIES = \[(.*?)\n  \];", src, flags=re.S)
-assert m, "DISCOVERIES array not found in js/main.js"
-body = m.group(1)
-
-known = set(re.findall(r'image:\s*"([^"]+)"', body))
-new = [f for f in present if f not in known]
-if not new:
-    print("DISCOVERIES already current — no new images.")
-    sys.exit(0)
-
-# Separate the trailing commented "ready to go live" block (kept verbatim).
-lines = body.split("\n")
-tail = []
-while lines and (lines[-1].strip() == "" or lines[-1].strip().startswith("//")):
-    tail.insert(0, lines.pop())
-active = "\n".join(lines).rstrip().rstrip(",")
-
-stub = lambda f: (
-    '    { title: "New discovery — edit me",\n'
-    '      blurb: "Describe this SAO discovery.",\n'
-    f'      image: {json.dumps(f)}, credit: "" }}')
-active += "".join(",\n" + stub(f) for f in new)
-
-rebuilt = "const DISCOVERIES = [" + active + ("\n" + "\n".join(tail) if tail else "") + "\n  ];"
-open(mainjs, "w").write(src[:m.start()] + rebuilt + src[m.end():])
-print(f"Appended {len(new)} stub entry/entries (edit title/blurb in js/main.js): " + ", ".join(new))
-EOF
-
-node --check "$MAINJS" && echo "js/main.js syntax OK"
+if [ "$count" -eq 0 ]; then
+  echo "No new/changed images in $DISC."
+else
+  echo "Now add or update the matching <li class=\"discovery-row\"> in index.html by hand"
+  echo "(title, blurb, credit) — see the existing rows in #impact-accordion for the pattern."
+fi
 
 if [ "${1:-}" = "--push" ]; then
   cd "$REPO"
-  git add assets/images/discoveries js/main.js
-  git commit -m "Add SAO discovery card image(s)"
+  git add assets/images/discoveries
+  git commit -m "Add SAO discovery image(s)"
   git push
   echo "Pushed — live in ~1 minute."
 else

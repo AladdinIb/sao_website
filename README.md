@@ -13,13 +13,13 @@ index.html                  Single-page site (hero, stats, impact, missions, his
 css/style.css               All styles; brand colors as CSS variables in :root
 js/main.js                  Interactions: nav, scroll reveals, hero backdrops,
                             rotating stat, photo mosaic, news feed,
-                            impact accordion, discoveries carousel, timeline
+                            impact accordion (incl. Our Top Discoveries), timeline
 assets/
   logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI, NASA SciX (SVG)
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
-    discoveries/            SAO Discoveries carousel cards (1080x620 JPEGs)
+    discoveries/            Our Top Discoveries images (800x360 JPEGs, fade into card)
     impact/                 Impact card top images (800x360 JPEGs, fade into card)
     hero_images/            Static hero backdrops (high-res JPEGs; masters in originals/)
     history_images/         Timeline photos
@@ -30,7 +30,7 @@ assets/
 scripts/
   add_mosaic_images.sh      Mosaic image pipeline (see below)
   add_hero_images.sh        Hero backdrop image pipeline (see below)
-  add_discovery_images.sh   Discoveries carousel image pipeline (see below)
+  add_discovery_images.sh   Our Top Discoveries image pipeline (see below)
   update_news.py            CfA news feed scraper (see below)
 .github/workflows/
   update-news.yml           Daily Action that refreshes the news feed
@@ -67,14 +67,11 @@ there is actually overflow in that direction.
 
 ## "Our National & Global Impact" section (#impact)
 
-This section holds a vertical **accordion** of themed cards (`#impact`) followed by the **SAO
-Discoveries** carousel (`#discoveries`). The discoveries row and the news feed are the only
-horizontal carousels left; they share one helper, `initScroller(track, { prev, next, toggle,
-autoplay, interval })` in `js/main.js`: overflow-aware ‹ › arrows, optional auto-advance that loops
-back at the end, a pause/play toggle, and a transient pause on hover/keyboard-focus. Everything is
-disabled under `prefers-reduced-motion` (no auto-scroll; arrows still work). Carousel markup
-pattern: `.scroller` wrapper › `.scroll-btn` arrows + `.h-scroll` track, with a `.carousel-toggle`
-in a `.carousel-controls` row above it.
+This section holds one vertical **accordion** (`#impact-accordion`) of themed disclosure cards. The
+last card, **"Our Top Discoveries,"** is a static list rather than a themed-link card, but it's
+still just another `.impact-item` — same header/chevron/open-close controls, no separate JS. The
+news feed above it (`#news`) is the only horizontal carousel left on the page; see the news section
+below for `initScroller`.
 
 **Impact accordion** — plain HTML `.impact-item`s in `index.html` (`#impact-accordion`), edit them
 there. Each row's header is the disclosure toggle: an `<h3 class="impact-acc-h">` wrapping a
@@ -84,18 +81,20 @@ column (`.impact-tag` kicker, `.impact-acc-title`, `.impact-sub`), and a `.impac
 The `.impact-acc-body` below it animates open via `grid-template-rows: 0fr→1fr` (inner wrapper clips
 the overflow). Bodies render **open by default** so the section is fully readable with no JS;
 `js/main.js` adds `.js` to `#impact-accordion`, which switches on the collapse, opens the first row,
-and marks closed bodies `inert` (out of the tab order). One open at a time. The chevron is hidden
-until JS wires it up.
+and marks closed bodies `inert` (out of the tab order). One open at a time — this is generic and
+applies uniformly to all seven `.impact-item`s, "Our Top Discoveries" included. The chevron is
+hidden until JS wires it up.
 
-Each row's links are `.impact-link`s (whole bullet is a clickable external link with title +
-description), laid out in a responsive `repeat(auto-fit, minmax(280px, 1fr))` grid inside the body.
-The four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
-treatment; AstroAI, SciX, and STARS additionally carry `.has-logo` and show a brand SVG
-(`astroAI_without_encoder.svg`, `scix_light.svg`, `STARS_Logo_Lockup_Horizontal_White.svg` — light
-variants for the dark card) in place of the text title, sized via `.impact-logo-astroai` /
-`.impact-logo-scix` / `.impact-logo-stars`. **Keep the outbound URLs working** — they point at real
-resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering,
-science-education-department, etc.).
+For the first six (themed-link) cards, each row's links are `.impact-link`s (whole bullet is a
+clickable external link with title + description), laid out in a responsive
+`repeat(auto-fit, minmax(280px, 1fr))` grid inside the body. The four marked `.flagship` (Minor
+Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent treatment; AstroAI, SciX, and STARS
+additionally carry `.has-logo` and show a brand SVG (`astroAI_without_encoder.svg`,
+`scix_light.svg`, `STARS_Logo_Lockup_Horizontal_White.svg` — light variants for the dark card) in
+place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix` /
+`.impact-logo-stars`. **Keep the outbound URLs working** — they point at real resources (MPC,
+HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering, science-education-department,
+etc.).
 
 Each row's `.impact-acc-art` image (set via inline `background-image`) sits on the left and fades
 **left-to-right** into the navy via a horizontal `mask-image` (the image itself fades to transparent
@@ -104,26 +103,44 @@ so the card's own background shows through — no seam). Images live in `assets/
 swap one, replace the file (keep the name) or point the row's `background-image` at a new file —
 optimize to ~800px wide / under ~150KB first.
 
-**SAO Discoveries** (`#discovery-grid`) is data-driven from the `DISCOVERIES` array in `js/main.js`
-(`{ title, blurb, image, credit }`), rendered as image-topped cards reusing the mission `.card-art`
-visual. It is a curated showcase, not a ranking. To add one:
+**Our Top Discoveries** (the 7th, last `.impact-item`) is a plain `<ul class="discovery-list">` of
+`<li class="discovery-row">` entries hardcoded in `index.html` — no JS array, no carousel, nothing
+to render at runtime, so every discovery is visible at once once the card is expanded. It's a
+curated, non-ranked showcase despite the name. Each row is:
 
-1. Drop an image (any size/format) into `assets/images/discoveries/` and run:
+```html
+<li class="discovery-row">
+  <span class="discovery-row-art" aria-hidden="true" style="background-image:url('assets/images/discoveries/<file>.jpg')"></span>
+  <span class="discovery-row-text">
+    <span class="discovery-row-tag"><!-- category, e.g. "Black holes" --></span>
+    <h4 class="discovery-row-title"><!-- headline --></h4>
+    <p class="discovery-row-blurb"><!-- one or two sentences --></p>
+    <p class="discovery-row-credit"><!-- image credit --></p>
+  </span>
+</li>
+```
+
+To add, edit, or reorder a discovery: edit these `<li>`s directly (order in the HTML is the display
+order). Deliberately non-interactive — no link, no hover lift — since there's nothing to click
+through to; see the code comment above `.discovery-list` in `css/style.css` if that's ever
+reconsidered. Each row's image is flush against the accordion card's own left edge (zero padding on
+`.discovery-list`) and fades right into the navy via the same `mask-image` technique as
+`.impact-acc-art` — the only rounding comes from the outer `.impact-item`'s own `overflow:hidden`,
+so only the very first and last row's image corners round at all; that's intentional, not a bug.
+
+To add a new discovery image:
+
+1. Drop it (any size/format) into `assets/images/discoveries/` and run:
 
    ```bash
-   ./scripts/add_discovery_images.sh          # crop to 1080x620, <500KB, append a stub entry
+   ./scripts/add_discovery_images.sh          # crop to 800x360, <500KB
    ./scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
    ```
 
-   The script center-crops to the 1080×620 card shape (quality auto-stepped under ~500KB) and
-   appends a stub `{ title, blurb, image, credit }` to `DISCOVERIES` for any image not yet
-   referenced; existing entries and the commented "ready to go live" block are left untouched.
-   Heavy originals stay gitignored (non-jpg masters + `discoveries/originals/`).
-2. Edit the stub's `title` / `blurb` / `credit` in `js/main.js`. Reorder by moving array entries.
-
-Four discoveries (accelerating universe, first exoplanet atmosphere, comets-are-icy-worlds, Shapiro
-delay) are written but commented out in `DISCOVERIES`, awaiting real imagery — uncomment once a
-suitable image is added. `_placeholder.jpg` is a neutral fallback for any entry without its own image.
+   The script center-crops to 800×360 (the same shape as `assets/images/impact/*.jpg`) with quality
+   auto-stepped under ~500KB. Heavy originals stay gitignored in `discoveries/originals/`.
+2. Add or edit the matching `<li class="discovery-row">` in `index.html` by hand (see the pattern
+   above) — title, blurb, credit, category tag, and the image filename.
 
 ## Hero backdrops
 
@@ -206,10 +223,11 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
-- **Motion** — with `prefers-reduced-motion` enabled, reveals/mosaic/stat rotation and the
-  discoveries carousel all go static; the hero backdrop is already static (visitor-switched, no
-  crossfade transition under reduced motion). Auto-advancing carousels carry a visible pause/play
-  control (WCAG 2.2.2).
+- **Motion** — with `prefers-reduced-motion` enabled, reveals/mosaic/stat rotation all go static;
+  the hero backdrop is already static (visitor-switched, no crossfade transition under reduced
+  motion). Nothing on the page auto-advances anymore (the news feed's arrows are manual-only), so
+  there's no pause/play control to maintain — if a future carousel *does* auto-advance, give it one
+  (WCAG 2.2.2).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
 

@@ -71,10 +71,20 @@ exist and is NOT this site).
   (also mirrored explicitly on `.stats`, which isn't `.section`-classed) is used for every
   "topic change" boundary (stats→news, missions→history, history→cfa, etc.). The one exception is
   news→impact, which is intentionally half that (`clamp(1.5rem, 3vw, 2.5rem)` on each side) because
-  those two are meant to read as one continuous flow rather than a hard break. Within the impact
-  section, `.discoveries { margin-top: clamp(3rem, 6vw, 4.5rem); }` gives the "Our Discoveries"
-  sub-section breathing room from the accordion above it. If you add a new section, let it inherit
-  the base padding rather than inventing a new value — that consistency was a deliberate fix.
+  those two are meant to read as one continuous flow rather than a hard break. If you add a new
+  section, let it inherit the base padding rather than inventing a new value — that consistency was
+  a deliberate fix.
+- "Our Top Discoveries" is NOT a separate section — it's the 7th and last `.impact-item` inside
+  `#impact-accordion`, reusing that exact same header/chevron/open-close JS with zero bespoke code.
+  Its body is a plain static `<ul class="discovery-list">` (hardcoded `<li>`s, no JS array, no
+  carousel — everything is visible at once when expanded). Each row's image is flush against the
+  card's own left edge (`.discovery-list` has zero horizontal padding) and mask-fades right into
+  the navy, exactly like `.impact-acc-art` — this is deliberate: don't add padding or a border-radius
+  to `.discovery-row-art` itself, or you'll break the flush-edge look and the "only the very first/
+  last row's corner rounds" behavior that comes for free from the parent's own `overflow:hidden`.
+  There used to be a separate `#discoveries` carousel section (JS-array-driven, `.discovery-card`s,
+  autoplay) — fully replaced; if you see references to `DISCOVERIES` array, `discovery-grid`,
+  `discovery-card`, or `.carousel-toggle`, they're stale, not a pattern to follow.
 - The mobile nav overlay is a fixed-position child of the header: never put
   `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
   block and pins the overlay inside the 60px bar — the frosted background lives on

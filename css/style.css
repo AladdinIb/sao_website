@@ -542,58 +542,6 @@ a { color: inherit; }
 .h-scroll > * { scroll-snap-align: start; }
 .h-scroll:focus-visible { outline: 2px solid var(--si-cyan); outline-offset: 4px; border-radius: 6px; }
 
-/* Pause/play control above each auto-scrolling carousel (WCAG 2.2.2). */
-.carousel-controls {
-  max-width: 1280px;
-  margin: 0 auto 1rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.carousel-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.3rem;
-  height: 2.3rem;
-  padding: 0;
-  border: 1px solid rgba(14, 23, 38, .2);
-  border-radius: 999px;
-  background: var(--white);
-  color: var(--si-blue);
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(14, 23, 38, .08);
-  transition: background .2s ease, border-color .2s ease, transform .2s ease;
-}
-.carousel-toggle:hover { transform: translateY(-1px); border-color: var(--si-blue-bright); }
-.carousel-toggle[hidden] { display: none; }
-
-/* Two bars (pause) when playing; a play triangle when paused. */
-.carousel-toggle-icon { position: relative; display: block; width: 11px; height: 12px; }
-.carousel-toggle-icon::before,
-.carousel-toggle-icon::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 3.2px;
-  height: 12px;
-  background: currentColor;
-  border-radius: 1px;
-}
-.carousel-toggle-icon::before { left: 0; }
-.carousel-toggle-icon::after { right: 0; }
-.carousel-toggle[aria-pressed="true"] .carousel-toggle-icon::after { display: none; }
-.carousel-toggle[aria-pressed="true"] .carousel-toggle-icon::before {
-  left: 0;
-  width: 0;
-  height: 0;
-  background: transparent;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-left: 11px solid currentColor;
-  border-radius: 0;
-}
-
 /* ---------- Impact accordion ----------
    A vertical stack of themed disclosures (replaced a horizontal carousel).
    Each row's header is the toggle button; bodies expand one at a time. The
@@ -607,10 +555,6 @@ a { color: inherit; }
   flex-direction: column;
   gap: .9rem;
 }
-
-/* Breathing room before the SAO Discoveries sub-section that follows the
-   accordion within the same section (they're related but visually distinct). */
-.discoveries { margin-top: clamp(3rem, 6vw, 4.5rem); }
 
 /* Each themed row: navy card with a yellow top accent, echoing the old cards. */
 .impact-item {
@@ -781,34 +725,81 @@ a { color: inherit; }
 .impact-logo-scix { height: 26px; }
 .impact-logo-stars { height: 30px; }
 
-/* ---------- Discovery cards ----------
-   Deliberately static/non-interactive: these are informational (no link, no
-   click handler), so — unlike mission .card / .card-link tiles, which really
-   do go somewhere — they must NOT get the hover lift-and-shadow affordance
-   that signals "clickable". Keep only a resting shadow for depth. */
+/* ---------- Our Top Discoveries ----------
+   Now the last item in #impact-accordion — same card, same header, same
+   open/close JS as every other .impact-item above it. The body is a plain
+   static list (no link, no carousel): each row's photo bleeds flush to the
+   card's left edge and fades right into the navy, exactly like the header's
+   own .impact-acc-art, just narrower. Deliberately non-interactive (no hover
+   lift) since nothing here is clickable. */
 
-.discovery-grid { padding: .4rem .2rem 1rem; }
-
-.discovery-card {
-  flex: 0 0 min(330px, 82vw);
-  display: flex;
-  flex-direction: column;
-  background: var(--white);
-  border-radius: var(--card-radius);
-  overflow: hidden;
-  box-shadow: 0 4px 18px rgba(14, 23, 38, .07);
+.discovery-list {
+  list-style: none;
+  padding: .2rem 0 1.2rem;
 }
 
-.discovery-card .card-art { height: 200px; }
+.discovery-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+.discovery-row:last-child { border-bottom: none; }
 
-.discovery-card-body { padding: 1.35rem 1.5rem 1.5rem; display: flex; flex-direction: column; flex: 1; }
-.discovery-card-body h3 { font-size: 1.2rem; line-height: 1.25; margin-bottom: .5rem; }
-.discovery-card-body p { font-size: .92rem; line-height: 1.55; color: var(--ink-soft); flex: 1; }
-.discovery-credit {
-  margin-top: .9rem;
-  font-size: .72rem;
-  color: var(--ink-soft);
-  opacity: .8;
+/* Flush left, no radius of its own — the card's own overflow:hidden rounds
+   only the true top/bottom corners, same trick as .impact-acc-art. */
+.discovery-row-art {
+  flex: 0 0 clamp(108px, 24%, 220px);
+  min-height: 112px;
+  background-size: cover;
+  background-position: center;
+  -webkit-mask-image: linear-gradient(to right, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 35%, transparent 100%);
+}
+
+.discovery-row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 1.5rem 1rem .1rem;
+}
+
+.discovery-row-tag {
+  display: block;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--si-cyan);
+  margin-bottom: .3rem;
+}
+
+.discovery-row-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: .3rem;
+}
+
+.discovery-row-blurb {
+  font-size: .86rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, .78);
+  margin-bottom: .4rem;
+}
+
+.discovery-row-credit {
+  font-size: .74rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, .5);
+}
+
+@media (max-width: 560px) {
+  .discovery-row-art { flex-basis: 92px; min-height: 96px; }
+  .discovery-row-title { font-size: .98rem; }
+  .discovery-row { gap: .8rem; }
 }
 
 /* ---------- Impact: news feed ---------- */
