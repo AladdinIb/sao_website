@@ -61,31 +61,26 @@
     revealObserver.observe(el);
   });
 
-  /* ---------- Hero backdrop slideshow ----------
-     Crossfades the hero backdrop every SLIDE_MS. Slides are built from
-     HERO_MANIFEST below — each entry is { file, credit }, with credit shown
-     in .hero-credit. To add/optimize images and regenerate this list, drop
-     them into assets/images/hero_images/ and run scripts/add_hero_images.sh
-     (it preserves the credit text you write here). The toggle lets visitors
-     stop it (accessibility); reduced-motion users start paused on one frame. */
+  /* ---------- Hero backdrop ----------
+     Static backdrops the visitor switches with the arrow controls — no
+     auto-advance, no Ken Burns. Slides are built from HERO_MANIFEST below,
+     each { file, credit }, with credit shown in .hero-credit. To add/optimize
+     images and regenerate this list, drop full-size files into
+     assets/images/hero_images/originals/ and run scripts/add_hero_images.sh
+     (it preserves the credit text you write here). */
 
   const HERO_DIR = "assets/images/hero_images/";
   const HERO_MANIFEST = [
-    { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — the Milky Way over [location]. Credit: [Name / Institution]." },
-    { file: "veritas.jpg", credit: "Placeholder credit — VERITAS telescope under the stars. Credit: [Name / Institution]." },
-    { file: "black_hole.jpg", credit: "Placeholder credit — a black hole and its accretion disk. Credit: [Name / Institution]." },
-    { file: "eht.jpg", credit: "Placeholder credit — the Event Horizon Telescope image of M87*. Credit: [Name / Institution]." },
-    { file: "earth_orbit.jpg", credit: "Placeholder credit — Earth's limb from orbit. Credit: [Name / Institution]." }
+    { file: "galactic.jpg", credit: "Placeholder credit — the center of the Milky Way in X-ray, infrared, and radio light. Credit: [Name / Institution]." },
+    { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — a 360° panorama of the Milky Way. Credit: [Name / Institution]." }
   ];
 
   const slideshow = document.querySelector(".hero-slideshow");
   if (slideshow && HERO_MANIFEST.length) {
     const credit = document.querySelector(".hero-credit");
-    const playToggle = document.querySelector(".hero-slideshow-toggle");
-    const SLIDE_MS = 10000; // ~8s hold + 2s crossfade — calm, but scrollers still catch a transition
+    const prevBtn = document.querySelector(".hero-prev");
+    const nextBtn = document.querySelector(".hero-next");
     let idx = 0;
-    let timer = null;
-    let playing = false;
 
     // Build the slide layers from the manifest.
     const slides = HERO_MANIFEST.map((item) => {
@@ -96,50 +91,23 @@
       return slide;
     });
 
-    const setCredit = (i) => {
-      if (credit) credit.textContent = HERO_MANIFEST[i].credit || "";
-    };
-
     const show = (i) => {
       slides[idx].classList.remove("is-active");
-      idx = i;
-      // Re-trigger the Ken Burns animation on the newly active slide.
+      idx = (i + slides.length) % slides.length;
       slides[idx].classList.add("is-active");
-      setCredit(idx);
-    };
-
-    const next = () => show((idx + 1) % slides.length);
-
-    const play = () => {
-      if (playing || slides.length < 2) return;
-      playing = true;
-      timer = window.setInterval(next, SLIDE_MS);
-      if (playToggle) {
-        playToggle.setAttribute("aria-pressed", "false");
-        playToggle.setAttribute("aria-label", "Pause background slideshow");
-      }
-    };
-
-    const pause = () => {
-      playing = false;
-      window.clearInterval(timer);
-      if (playToggle) {
-        playToggle.setAttribute("aria-pressed", "true");
-        playToggle.setAttribute("aria-label", "Play background slideshow");
-      }
+      if (credit) credit.textContent = HERO_MANIFEST[idx].credit || "";
     };
 
     slides[0].classList.add("is-active");
-    setCredit(0);
+    if (credit) credit.textContent = HERO_MANIFEST[0].credit || "";
 
-    if (playToggle) {
-      playToggle.addEventListener("click", () => (playing ? pause() : play()));
-    }
-
-    if (reduceMotion || slides.length < 2) {
-      pause();
+    // A single backdrop needs no controls.
+    const nav = document.querySelector(".hero-nav");
+    if (slides.length < 2) {
+      if (nav) nav.hidden = true;
     } else {
-      play();
+      if (prevBtn) prevBtn.addEventListener("click", () => show(idx - 1));
+      if (nextBtn) nextBtn.addEventListener("click", () => show(idx + 1));
     }
   }
 

@@ -1,20 +1,24 @@
 #!/bin/bash
-# add_hero_images.sh — optimize hero backdrop images and refresh the slideshow.
+# add_hero_images.sh — optimize hero backdrop images and refresh the manifest.
 #
-# Just drop image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
-#   assets/images/hero_images/
+# Drop full-size image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
+#   assets/images/hero_images/originals/
 # then run:
 #   ./scripts/add_hero_images.sh          # optimize + update manifest
 #   ./scripts/add_hero_images.sh --push   # ...and commit + push to deploy
 #
-# For each image the script produces a web-optimized <name>.jpg (max 1920px
-# wide, quality auto-stepped to stay under ~500KB) and regenerates the
-# HERO_MANIFEST list in js/main.js, which the page reads to build the
-# crossfading backdrop slideshow. Existing per-image credit lines are
-# preserved; brand-new images get a placeholder credit for you to edit.
+# For each master in originals/ the script writes a web JPG to
+#   assets/images/hero_images/<name>.jpg
+# resized to at most MAX_WIDTH (never upscaled) at high quality, then
+# regenerates the HERO_MANIFEST list in js/main.js, which the page reads to
+# build the arrow-switchable hero backdrops.
 #
-# Heavy originals (the non-jpg you dropped, or a backup of an oversized jpg)
-# stay on disk as masters but are gitignored — only the optimized .jpg ships.
+# These backdrops are the site's showpiece, so quality is prioritized over
+# file size: MAX_WIDTH is large and there is no ~500KB cap here (unlike other
+# images). Existing per-image credit lines are preserved; brand-new images get
+# a placeholder credit for you to edit in js/main.js.
+#
+# The originals/ masters are gitignored — only the optimized <name>.jpg ships.
 
 set -euo pipefail
 
@@ -23,84 +27,60 @@ HERO="$REPO/assets/images/hero_images"
 ORIG="$HERO/originals"
 MAINJS="$REPO/js/main.js"
 
-MAX_WIDTH=1920
-MAX_BYTES=512000          # ~500KB ceiling per CLAUDE.md
-QUALITIES=(88 84 80 76 72 68)
+MAX_WIDTH=3200   # crisp on large / retina displays
+QUALITY=88       # visually lossless for photographic starfields
+SOFT_CAP=2500000 # just a heads-up threshold (~2.5MB); not enforced
 
-mkdir -p "$HERO" "$ORIG"
-
-# optimize <source> <output.jpg> — resize to <=MAX_WIDTH and step quality down
-# until the file is under MAX_BYTES (or the lowest quality is reached).
-optimize() {
-  local src="$1" out="$2" q size
-  local w
-  w=$(sips -g pixelWidth "$src" | awk '/pixelWidth/{print $2}')
-  for q in "${QUALITIES[@]}"; do
-    if [ -n "$w" ] && [ "$w" -gt "$MAX_WIDTH" ]; then
-      sips -s format jpeg -s formatOptions "$q" --resampleWidth "$MAX_WIDTH" "$src" --out "$out" >/dev/null
-    else
-      sips -s format jpeg -s formatOptions "$q" "$src" --out "$out" >/dev/null
-    fi
-    size=$(stat -f%z "$out")
-    [ "$size" -le "$MAX_BYTES" ] && break
-  done
-  echo "$size"
-}
+mkdir -p "$ORIG"
 
 shopt -s nullglob nocaseglob
 count=0
-
-# Pass 1: non-jpg masters (png/heic/webp/tiff) -> optimized <name>.jpg.
-for src in "$HERO"/*.{png,heic,webp,tif,tiff}; do
+for src in "$ORIG"/*.{jpg,jpeg,png,heic,webp,tif,tiff}; do
   base=$(basename "$src"); base=${base%.*}
   out="$HERO/$base.jpg"
-  # Skip only if the jpg is already up to date AND within the size budget;
-  # an over-budget jpg always gets re-optimized (quality stepped down).
-  if [ -f "$out" ] && [ "$out" -nt "$src" ] && [ "$(stat -f%z "$out")" -le "$MAX_BYTES" ]; then
+
+  # Skip if the shipping JPG is already newer than its master.
+  if [ -f "$out" ] && [ "$out" -nt "$src" ]; then
     continue
   fi
-  size=$(optimize "$src" "$out")
-  echo "  $(basename "$src") -> $base.jpg ($(echo "$size" | awk '{printf "%dKB", $1/1024}'))"
-  [ "$size" -gt "$MAX_BYTES" ] && echo "    NOTE: still over ~500KB at lowest quality — consider a smaller crop."
-  count=$((count + 1))
-done
 
-# Pass 2: standalone jpgs that have no master and are oversized -> optimize
-# in place, backing up the original you dropped into originals/ first.
-for src in "$HERO"/*.{jpg,jpeg}; do
-  base=$(basename "$src"); base=${base%.*}
-  # Has a non-jpg master? Then it's an output from pass 1 — leave it alone.
-  for m in "$HERO/$base".{png,heic,webp,tif,tiff}; do
-    [ -f "$m" ] && continue 2
-  done
   w=$(sips -g pixelWidth "$src" | awk '/pixelWidth/{print $2}')
-  size=$(stat -f%z "$src")
-  if { [ -n "$w" ] && [ "$w" -gt "$MAX_WIDTH" ]; } || [ "$size" -gt "$MAX_BYTES" ]; then
-    cp "$src" "$ORIG/$(basename "$src")"
-    newsize=$(optimize "$ORIG/$(basename "$src")" "$HERO/$base.jpg")
-    echo "  $(basename "$src") optimized in place ($(echo "$newsize" | awk '{printf "%dKB", $1/1024}'); original kept in originals/)"
-    count=$((count + 1))
+  if [ -n "$w" ] && [ "$w" -gt "$MAX_WIDTH" ]; then
+    sips -s format jpeg -s formatOptions "$QUALITY" --resampleWidth "$MAX_WIDTH" "$src" --out "$out" >/dev/null
+  else
+    sips -s format jpeg -s formatOptions "$QUALITY" "$src" --out "$out" >/dev/null
   fi
+
+  size=$(stat -f%z "$out")
+  echo "  $(basename "$src") -> $base.jpg ($(echo "$size" | awk '{printf "%.1fMB", $1/1048576}'))"
+  [ "$size" -gt "$SOFT_CAP" ] && echo "    NOTE: large file — fine for a showpiece backdrop, but consider a narrower crop if load feels slow."
+  count=$((count + 1))
 done
 shopt -u nullglob nocaseglob
 
-# Always regenerate the manifest so removed images drop out and new ones appear,
-# even when nothing needed re-optimizing this run.
-python3 - "$MAINJS" "$HERO" <<'EOF'
+if [ "$count" -eq 0 ]; then
+  echo "No new masters to optimize in $ORIG (shipping JPGs are up to date)."
+fi
+
+# Always regenerate the manifest so removed images drop out and new ones appear.
+python3 - "$MAINJS" "$HERO" "$ORIG" <<'EOF'
 import re, sys, json, pathlib
-mainjs, hero = sys.argv[1], pathlib.Path(sys.argv[2])
-present = sorted(p.name for p in hero.glob("*.jpg"))
+mainjs, hero, orig = sys.argv[1], pathlib.Path(sys.argv[2]), pathlib.Path(sys.argv[3])
+
+# Ship only JPGs that have a master in originals/ (so deleting a master retires it).
+master_stems = {p.stem for p in orig.iterdir() if p.suffix.lower() in
+                {".jpg", ".jpeg", ".png", ".heic", ".webp", ".tif", ".tiff"}}
+present = sorted(p.name for p in hero.glob("*.jpg") if p.stem in master_stems)
 
 src = open(mainjs).read()
 m = re.search(r"const HERO_MANIFEST = \[(.*?)\];", src, flags=re.S)
 assert m, "HERO_MANIFEST array not found in js/main.js"
 
-# Preserve existing credits (keyed by filename) and the existing play order.
+# Preserve existing credits (keyed by filename) and the existing display order.
 existing, order = {}, []
 for em in re.finditer(r'\{\s*file:\s*("(?:[^"\\]|\\.)*")\s*,\s*credit:\s*("(?:[^"\\]|\\.)*")\s*\}', m.group(1)):
-    f = json.loads(em.group(1))   # parse JS/JSON string literals (handles \" and unicode)
-    c = json.loads(em.group(2))
-    existing[f] = c
+    f = json.loads(em.group(1))
+    existing[f] = json.loads(em.group(2))
     order.append(f)
 
 PLACEHOLDER = "Placeholder credit — describe this image, then: Credit: [Name / Institution]."
@@ -122,7 +102,7 @@ node --check "$MAINJS" && echo "js/main.js syntax OK"
 if [ "${1:-}" = "--push" ]; then
   cd "$REPO"
   git add assets/images/hero_images js/main.js
-  git commit -m "Update hero backdrop slideshow images"
+  git commit -m "Update hero backdrop images"
   git push
   echo "Pushed — live in ~1 minute."
 else

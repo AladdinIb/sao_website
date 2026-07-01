@@ -62,10 +62,10 @@
 
     <!-- ======= Hero ======= -->
     <section class="hero">
-      <!-- Auto-playing backdrop slideshow. Slides are built by js/main.js from
-         HERO_MANIFEST (filenames + credit text). To add/optimize images and
-         refresh the list, drop them in assets/images/hero_images/ and run
-         scripts/add_hero_images.sh. -->
+      <!-- Static backdrops the visitor switches with the arrow controls. Slides
+         (filenames + credit text) come from HERO_MANIFEST in js/main.js. To add or
+         optimize images and refresh the list, drop full-size files into
+         assets/images/hero_images/originals/ and run scripts/add_hero_images.sh. -->
       <div class="hero-slideshow" aria-hidden="true"></div>
       <div class="hero-content">
         <div class="hero-logo reveal">
@@ -79,10 +79,11 @@
           <a class="btn btn-ghost" href="#history">Our Story Since 1890</a>
         </div>
       </div>
-      <p class="hero-credit" aria-live="off"></p>
-      <button class="hero-slideshow-toggle" type="button" aria-pressed="false" aria-label="Pause background slideshow">
-        <span class="hero-toggle-icon" aria-hidden="true"></span>
-      </button>
+      <p class="hero-credit" aria-live="polite"></p>
+      <div class="hero-nav">
+        <button class="hero-arrow hero-prev" type="button" aria-label="Previous background image">‹</button>
+        <button class="hero-arrow hero-next" type="button" aria-label="Next background image">›</button>
+      </div>
       <a class="scroll-hint" href="#stats" aria-label="Scroll down">
         <span class="chevron"></span>
       </a>

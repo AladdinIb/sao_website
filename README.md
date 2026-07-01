@@ -11,7 +11,7 @@ Deployed via GitHub Pages from the `main` branch root — every push to `main` g
 ```
 index.html                  Single-page site (hero, stats, impact, missions, history, CfA, footer)
 css/style.css               All styles; brand colors as CSS variables in :root
-js/main.js                  Interactions: nav, scroll reveals, hero slideshow,
+js/main.js                  Interactions: nav, scroll reveals, hero backdrops,
                             rotating stat, photo mosaic, news feed,
                             impact accordion, discoveries carousel, timeline
 assets/
@@ -21,7 +21,7 @@ assets/
     card_images/            Mission card photos (~900px wide)
     discoveries/            SAO Discoveries carousel cards (1080x620 JPEGs)
     impact/                 Impact card top images (800x360 JPEGs, fade into card)
-    hero_images/            Hero backdrop slideshow frames (~1920px wide JPEGs)
+    hero_images/            Static hero backdrops (high-res JPEGs; masters in originals/)
     history_images/         Timeline photos
     mosaic/                 600x600 tiles for the rotating stats mosaic
     mosaic_sources/         Raw drop folder for new mosaic images (gitignored)
@@ -29,7 +29,7 @@ assets/
   favicon.svg               Smithsonian sunburst (+ PNG fallbacks)
 scripts/
   add_mosaic_images.sh      Mosaic image pipeline (see below)
-  add_hero_images.sh        Hero slideshow image pipeline (see below)
+  add_hero_images.sh        Hero backdrop image pipeline (see below)
   add_discovery_images.sh   Discoveries carousel image pipeline (see below)
   update_news.py            CfA news feed scraper (see below)
 .github/workflows/
@@ -125,37 +125,37 @@ Four discoveries (accelerating universe, first exoplanet atmosphere, comets-are-
 delay) are written but commented out in `DISCOVERIES`, awaiting real imagery — uncomment once a
 suitable image is added. `_placeholder.jpg` is a neutral fallback for any entry without its own image.
 
-## Hero backdrop slideshow
+## Hero backdrops
 
-The landing hero auto-plays a crossfading slideshow of the images in
-`assets/images/hero_images/`. The play order and per-image credit lines live in the
-`HERO_MANIFEST` array in [`js/main.js`](js/main.js) (search "Hero backdrop slideshow") —
-`{ file, credit }` per slide. The page builds the `.hero-slide` layers from it, shows each
-slide's `credit` verbatim in the small `.hero-credit` caption (bottom-left), and advances every
-`SLIDE_MS` (10 s — ~8 s hold + 2 s crossfade) with a gentle Ken-Burns zoom on the active frame.
+The landing hero shows a **static** backdrop that the visitor switches with the ‹ › arrow controls
+(bottom-right) — no auto-advance, no Ken Burns. The images, order, and per-image credit lines live
+in the `HERO_MANIFEST` array in [`js/main.js`](js/main.js) (search "Hero backdrop") —
+`{ file, credit }` per image. The page builds the `.hero-slide` layers from it, crossfades between
+them on arrow press, and shows the active image's `credit` verbatim in the small `.hero-credit`
+caption (bottom-left).
 
 ### Adding / changing images
 
-Just drop image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
-`assets/images/hero_images/` and run:
+These backdrops are the site's showpiece, so quality is prioritized over file size. Drop full-size
+master image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
+`assets/images/hero_images/originals/` and run:
 
 ```bash
 ./scripts/add_hero_images.sh          # optimize + refresh the manifest
 ./scripts/add_hero_images.sh --push   # ...and commit + push to deploy
 ```
 
-The script produces a web-optimized `<name>.jpg` (max 1920px wide, quality auto-stepped down from
-88 to stay under ~500KB) and regenerates `HERO_MANIFEST`. It **preserves the credit text** you've
-written for existing images and gives brand-new ones a placeholder credit to edit. Heavy
-originals stay on disk as masters but are gitignored: the non-jpg you dropped, plus a backup of
-any oversized jpg in `hero_images/originals/`. Removing an image from the folder and re-running
-drops it from the slideshow.
+For each master the script writes a web `<name>.jpg` to `assets/images/hero_images/` — resized to
+at most **3200px** wide (never upscaled) at **quality 88**, deliberately with **no ~500KB cap** so
+the backdrops stay gorgeous on large / retina displays (galactic.jpg is ~1.6MB, and that's fine).
+It then regenerates `HERO_MANIFEST`, **preserving the credit text** you've written for existing
+images and giving brand-new ones a placeholder credit to edit. The `originals/` masters are
+gitignored — only the optimized `<name>.jpg` ships. Deleting a master and re-running retires that
+image from the hero.
 
 - **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end).
 - **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST`.
-- A small play/pause control (bottom-right) lets visitors stop the rotation; with
-  `prefers-reduced-motion` enabled it starts paused on a single frame and the Ken-Burns/crossfade
-  animations are disabled. A two-image-minimum guard disables auto-play if only one slide exists.
+- With a single image the arrow controls hide themselves automatically.
 
 ### Contrast
 
@@ -206,10 +206,10 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
-- **Motion** — with `prefers-reduced-motion` enabled, reveals/starfield/mosaic/stat rotation, the
-  hero slideshow, and the discoveries carousel all go static (the slideshow starts paused on
-  one frame; the carousel doesn't auto-advance but arrows still work). Auto-advancing carousels also
-  carry a visible pause/play control (WCAG 2.2.2).
+- **Motion** — with `prefers-reduced-motion` enabled, reveals/mosaic/stat rotation and the
+  discoveries carousel all go static; the hero backdrop is already static (visitor-switched, no
+  crossfade transition under reduced motion). Auto-advancing carousels carry a visible pause/play
+  control (WCAG 2.2.2).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
 
