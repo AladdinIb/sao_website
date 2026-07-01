@@ -64,24 +64,51 @@
   /* ---------- Hero backdrop ----------
      Static backdrops the visitor switches with the arrow controls — no
      auto-advance, no Ken Burns. Slides are built from HERO_MANIFEST below,
-     each { file, credit }, with credit shown in .hero-credit. To add/optimize
+     each { file, credit, tone? }, with credit shown in .hero-credit. Set
+     tone: "light" on any image with a bright background (e.g. a snowy or
+     white-sky frame) — it flips the logo, tagline, nav, and controls to dark
+     ink for contrast (see applyTone below and .hero[data-tone] in the CSS).
+     Omit it (or use "dark") for the usual dark-sky frames. To add/optimize
      images and regenerate this list, drop full-size files into
      assets/images/hero_images/originals/ and run scripts/add_hero_images.sh
-     (it preserves the credit text you write here). */
+     (it preserves the credit and tone you write here). */
 
   const HERO_DIR = "assets/images/hero_images/";
+  const HERO_LOGO = {
+    dark: "assets/logos/si_AO_rgb_vertical_color-reversed.svg", // white lockup, for dark frames
+    light: "assets/logos/si_AO_rgb_verical_color.svg"           // colour lockup w/ dark wordmark
+  };
   const HERO_MANIFEST = [
-    { file: "galactic.jpg", credit: "Placeholder credit — the center of the Milky Way in X-ray, infrared, and radio light. Credit: [Name / Institution]." },
-    { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — a 360° panorama of the Milky Way. Credit: [Name / Institution]." },
-    { file: "veritas_backdrop.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
+    { file: "spt.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "veritas.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "chandra_launch.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "galactic_center.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "mmt.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "sma.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
   ];
 
   const slideshow = document.querySelector(".hero-slideshow");
   if (slideshow && HERO_MANIFEST.length) {
+    const hero = document.querySelector(".hero");
+    const heroLogoImg = document.querySelector(".hero-logo img");
     const credit = document.querySelector(".hero-credit");
     const prevBtn = document.querySelector(".hero-prev");
     const nextBtn = document.querySelector(".hero-next");
     let idx = 0;
+
+    // Preload the alternate logo so the swap on a light frame doesn't flash.
+    new Image().src = HERO_LOGO.light;
+
+    // Flip the hero (and the transparent header over it) between dark/light
+    // ink for the current frame. CSS keys off .hero[data-tone] and, for the
+    // header, [data-hero-tone] gated on :not(.scrolled).
+    const applyTone = (tone) => {
+      const t = tone === "light" ? "light" : "dark";
+      if (hero) hero.dataset.tone = t;
+      if (header) header.dataset.heroTone = t;
+      if (heroLogoImg) heroLogoImg.src = HERO_LOGO[t];
+    };
 
     // Build the slide layers from the manifest.
     const slides = HERO_MANIFEST.map((item) => {
@@ -97,10 +124,12 @@
       idx = (i + slides.length) % slides.length;
       slides[idx].classList.add("is-active");
       if (credit) credit.textContent = HERO_MANIFEST[idx].credit || "";
+      applyTone(HERO_MANIFEST[idx].tone);
     };
 
     slides[0].classList.add("is-active");
     if (credit) credit.textContent = HERO_MANIFEST[0].credit || "";
+    applyTone(HERO_MANIFEST[0].tone);
 
     // A single backdrop needs no controls.
     const nav = document.querySelector(".hero-nav");
@@ -119,13 +148,13 @@
   const ROTATING_STATS = [
     { big: "1890", label: "Exploring the cosmos<br>since our founding" },
     { big: "600", label: "People pushing the frontiers of astrophysics" },
-    { big: "300", label: "Years of combined history" },
-    { big: "Two", label: "Nobel prizes" },
-    { big: "Thousands", label: "Of major discoveries" },
-    { big: "Fifty", label: "States where our science has impact" },
+    { big: "2", label: "Nobel prizes" },
+    { big: "50", label: "States where our science has impact" },
     { big: "16+", label: "World-class observatories" },
-    { big: "Six", label: "Scientific divisions spanning all of astrophysics" },
-    { big: "Humanity's First", label: "Image of a black hole" }
+    { big: "16 million", label: "Annual users of the SciX/ADS astronomy literature database" },
+    { big: "6", label: "Scientific divisions spanning all of astrophysics" },
+    { big: "1", label: "NASA Great Observatory: the Chandra X-ray Observatory" },
+    { big: "1st", label: "Image of a black hole" }
   ];
 
   const lead = document.querySelector(".stat-lead");
@@ -292,7 +321,7 @@
 
   const initScroller = (track, opts = {}) => {
     const { prev, next, toggle, autoplay = false, interval = 6000 } = opts;
-    if (!track) return { update: () => {} };
+    if (!track) return { update: () => { } };
 
     const hasOverflow = () => track.scrollWidth > track.clientWidth + 4;
     const atEnd = () => track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;

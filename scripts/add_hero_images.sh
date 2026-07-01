@@ -15,8 +15,9 @@
 #
 # These backdrops are the site's showpiece, so quality is prioritized over
 # file size: MAX_WIDTH is large and there is no ~500KB cap here (unlike other
-# images). Existing per-image credit lines are preserved; brand-new images get
-# a placeholder credit for you to edit in js/main.js.
+# images). Existing per-image credit lines (and the optional tone: "light" flag
+# for bright/snowy frames) are preserved; brand-new images get a placeholder
+# credit for you to edit in js/main.js.
 #
 # The originals/ masters are gitignored — only the optimized <name>.jpg ships.
 
@@ -77,18 +78,33 @@ m = re.search(r"const HERO_MANIFEST = \[(.*?)\];", src, flags=re.S)
 assert m, "HERO_MANIFEST array not found in js/main.js"
 
 # Preserve existing credits (keyed by filename) and the existing display order.
+# Entries are { file, tone?, credit }; parse fields by key so the optional tone
+# survives a regen and field order doesn't matter.
 existing, order = {}, []
-for em in re.finditer(r'\{\s*file:\s*("(?:[^"\\]|\\.)*")\s*,\s*credit:\s*("(?:[^"\\]|\\.)*")\s*\}', m.group(1)):
-    f = json.loads(em.group(1))
-    existing[f] = json.loads(em.group(2))
+for obj in re.finditer(r'\{(.*?)\}', m.group(1), flags=re.S):
+    body = obj.group(1)
+    fm = re.search(r'file:\s*("(?:[^"\\]|\\.)*")', body)
+    if not fm:
+        continue
+    f = json.loads(fm.group(1))
+    cm = re.search(r'credit:\s*("(?:[^"\\]|\\.)*")', body)
+    tm = re.search(r'tone:\s*("(?:[^"\\]|\\.)*")', body)
+    existing[f] = {"credit": json.loads(cm.group(1)) if cm else None,
+                   "tone": json.loads(tm.group(1)) if tm else None}
     order.append(f)
 
 PLACEHOLDER = "Placeholder credit — describe this image, then: Credit: [Name / Institution]."
 ordered = [f for f in order if f in present] + [f for f in present if f not in order]
 
-lines = ",\n".join(
-    f"    {{ file: {json.dumps(f, ensure_ascii=False)}, credit: {json.dumps(existing.get(f, PLACEHOLDER), ensure_ascii=False)} }}"
-    for f in ordered)
+def entry(f):
+    meta = existing.get(f, {})
+    parts = [f"file: {json.dumps(f, ensure_ascii=False)}"]
+    if meta.get("tone"):
+        parts.append(f"tone: {json.dumps(meta['tone'], ensure_ascii=False)}")
+    parts.append(f"credit: {json.dumps(meta.get('credit') or PLACEHOLDER, ensure_ascii=False)}")
+    return "    { " + ", ".join(parts) + " }"
+
+lines = ",\n".join(entry(f) for f in ordered)
 out = f"const HERO_MANIFEST = [\n{lines}\n  ];"
 open(mainjs, "w").write(src[:m.start()] + out + src[m.end():])
 print(f"Updated HERO_MANIFEST: {len(ordered)} image(s)")

@@ -61,6 +61,32 @@ stays current without manual work. To refresh on demand: run the script locally 
 trigger the Action from the repo's Actions tab ("Run workflow"). If the CfA page layout changes,
 the script exits nonzero rather than writing a bad feed — check the Action logs.
 
+### Keeping the feed fresh on a self-hosted server (not GitHub Pages)
+
+The feed is just two static things the browser fetches — `assets/data/news.json` and
+`assets/images/news/*.jpg` — and `update_news.py` writes them relative to its own location
+(`scripts/../assets/...`). So on a server that hosts this site outside GitHub Pages, **no code,
+HTML, or rebuild is needed** — just run the scraper on a daily cron so it regenerates those files
+in place. As long as this `scripts/` folder ships inside (or one level above `assets/` in) the
+docroot, the refresh lands directly in the live files.
+
+Use the `scripts/refresh_news.sh` wrapper (stable working dir + timestamped logging + a clear
+failure exit code). One-time setup, then a crontab line:
+
+```bash
+pip install Pillow                       # once, on the server (or in a venv)
+# crontab -e — daily at 03:17 server time, appending to a log:
+17 3 * * * /var/www/sao_website/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
+```
+
+Notes: the scrape needs outbound HTTPS to `cfa.harvard.edu`; the cron user needs write access to
+`assets/data/` and `assets/images/news/`; if system Python lacks Pillow, point the wrapper at a
+virtualenv with `PYTHON=/path/to/venv/bin/python`. `update_news.py` exits nonzero **without**
+touching `news.json` when the scrape fails or parses fewer than 3 items, so a bad run leaves the
+last-good feed in place — watch the log (or alert on nonzero exit) to catch CfA markup changes.
+The daily GitHub Action is harmless to leave enabled but is redundant for a self-hosted deploy;
+disable it if you don't also publish to GitHub Pages.
+
 The cards always render as a single row: when the viewport can't fit them all, the row scrolls
 horizontally (hidden scrollbar, scroll-snap) behind circular arrow buttons that appear only when
 there is actually overflow in that direction.
@@ -147,9 +173,9 @@ To add a new discovery image:
 The landing hero shows a **static** backdrop that the visitor switches with the ‹ › arrow controls
 (bottom-right) — no auto-advance, no Ken Burns. The images, order, and per-image credit lines live
 in the `HERO_MANIFEST` array in [`js/main.js`](js/main.js) (search "Hero backdrop") —
-`{ file, credit }` per image. The page builds the `.hero-slide` layers from it, crossfades between
-them on arrow press, and shows the active image's `credit` verbatim in the small `.hero-credit`
-caption (bottom-left).
+`{ file, credit, tone? }` per image. The page builds the `.hero-slide` layers from it, crossfades
+between them on arrow press, and shows the active image's `credit` verbatim in the small
+`.hero-credit` caption (bottom-left).
 
 ### Adding / changing images
 
@@ -165,23 +191,31 @@ master image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
 For each master the script writes a web `<name>.jpg` to `assets/images/hero_images/` — resized to
 at most **3200px** wide (never upscaled) at **quality 88**, deliberately with **no ~500KB cap** so
 the backdrops stay gorgeous on large / retina displays (galactic.jpg is ~1.6MB, and that's fine).
-It then regenerates `HERO_MANIFEST`, **preserving the credit text** you've written for existing
-images and giving brand-new ones a placeholder credit to edit. The `originals/` masters are
-gitignored — only the optimized `<name>.jpg` ships. Deleting a master and re-running retires that
-image from the hero.
+It then regenerates `HERO_MANIFEST`, **preserving the credit text and the optional `tone` flag**
+you've written for existing images and giving brand-new ones a placeholder credit to edit. The
+`originals/` masters are gitignored — only the optimized `<name>.jpg` ships. Deleting a master and
+re-running retires that image from the hero.
 
 - **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end).
 - **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST`.
 - With a single image the arrow controls hide themselves automatically.
 
-### Contrast
+### Contrast (dark vs. light frames)
 
-There is **no darkening overlay** — backdrops show as-is. Legibility of the centred logo/tagline
-comes from text-shadows on the text itself (`.hero-logo img`, `.hero-title`, `.hero-sub`), which
-protect the glyphs without tinting the photo. When swapping in a new image, check it behind the
-title/tagline: very bright, busy frames *centred* behind the text (e.g. a bright ring or galactic
-core dead-centre) are the risk. If one is too low-contrast, drop it rather than re-adding a
-full-image gradient.
+There is **no darkening overlay** — backdrops show as-is. For the usual dark-sky frames, legibility
+of the centred logo/tagline comes from text-shadows on the text itself (`.hero-logo img`,
+`.hero-title`, `.hero-sub`), which protect the glyphs without tinting the photo.
+
+For a **bright frame** (a snowy scene, a white sky) white text washes out, so tag that image
+`tone: "light"` in `HERO_MANIFEST`. On that slide `applyTone()` in `js/main.js` sets
+`.hero[data-tone="light"]` (and `[data-hero-tone]` on the header) and swaps the hero lockup to the
+colour logo (`si_AO_rgb_verical_color.svg`); the CSS block under `/* Light-tone hero */` flips the
+logo halo, title, tagline, credit, arrows, ghost button, and the transparent nav to dark navy ink.
+The header only follows the frame while it's transparent (`:not(.scrolled)`), and the dark mobile
+menu keeps white links (`.site-nav:not(.open)`) and a white close ✕ (`.nav-toggle:not([aria-expanded="true"])`).
+Colour transitions live on the base rules so the flip cross-fades with the 1.1s slide change.
+Default (no `tone`, or `"dark"`) keeps the white treatment. Re-run axe after adding a light frame —
+the point is that both tones pass contrast.
 
 ## Adding to the rotating stats
 
