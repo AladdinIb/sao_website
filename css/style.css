@@ -781,7 +781,11 @@ a { color: inherit; }
 .impact-logo-scix { height: 26px; }
 .impact-logo-stars { height: 30px; }
 
-/* ---------- Discovery cards (reuse mission .card visuals) ---------- */
+/* ---------- Discovery cards ----------
+   Deliberately static/non-interactive: these are informational (no link, no
+   click handler), so — unlike mission .card / .card-link tiles, which really
+   do go somewhere — they must NOT get the hover lift-and-shadow affordance
+   that signals "clickable". Keep only a resting shadow for depth. */
 
 .discovery-grid { padding: .4rem .2rem 1rem; }
 
@@ -793,11 +797,6 @@ a { color: inherit; }
   border-radius: var(--card-radius);
   overflow: hidden;
   box-shadow: 0 4px 18px rgba(14, 23, 38, .07);
-  transition: transform .3s ease, box-shadow .3s ease;
-}
-.discovery-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 44px rgba(14, 23, 38, .16);
 }
 
 .discovery-card .card-art { height: 200px; }
