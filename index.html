@@ -133,24 +133,25 @@
           diffuse human knowledge, but increase it.</p>
       </div>
 
-      <div class="carousel-controls reveal">
-        <button class="carousel-toggle" type="button" aria-pressed="false"
-          aria-label="Pause auto-scrolling impact cards" data-carousel="impact" hidden>
-          <span class="carousel-toggle-icon" aria-hidden="true"></span>
-        </button>
-      </div>
+      <div class="impact-accordion reveal" id="impact-accordion">
 
-      <div class="scroller impact-scroller reveal">
-        <button class="scroll-btn scroll-prev" aria-label="Previous impact cards" hidden>‹</button>
-        <div class="h-scroll impact-grid" id="impact-grid">
-
-          <article class="impact-card">
-            <div class="impact-art" aria-hidden="true"
-              style="background-image:url('assets/images/impact/leadership.jpg')"></div>
-            <p class="impact-tag">Frontier science</p>
-            <h3>Securing American Leadership in Cosmic Discovery</h3>
-            <p class="impact-sub">Next-generation telescopes &amp; technology</p>
-            <ul class="impact-links">
+        <article class="impact-item">
+          <h3 class="impact-acc-h">
+            <button class="impact-acc-header" type="button" id="impact-head-1" aria-expanded="true"
+              aria-controls="impact-body-1">
+              <span class="impact-acc-art" aria-hidden="true"
+                style="background-image:url('assets/images/impact/leadership.jpg')"></span>
+              <span class="impact-acc-text">
+                <span class="impact-tag">Frontier science</span>
+                <span class="impact-acc-title">Securing American Leadership in Cosmic Discovery</span>
+                <span class="impact-sub">Next-generation telescopes &amp; technology</span>
+              </span>
+              <span class="impact-acc-chev" aria-hidden="true">⌄</span>
+            </button>
+          </h3>
+          <div class="impact-acc-body" id="impact-body-1" role="region" aria-labelledby="impact-head-1">
+            <div class="impact-acc-body-inner">
+              <ul class="impact-links">
               <li><a class="impact-link" href="https://giantmagellan.org/" target="_blank" rel="noopener">
                   <span class="impact-link-name">Giant Magellan Telescope <span class="impact-arrow"
                       aria-hidden="true">↗</span></span>
@@ -178,16 +179,28 @@
                   <span class="impact-link-desc">Home to VERITAS and the MMT — infrastructure serving researchers,
                     educators, and industry.</span>
                 </a></li>
-            </ul>
-          </article>
+              </ul>
+            </div>
+          </div>
+        </article>
 
-          <article class="impact-card">
-            <div class="impact-art" aria-hidden="true"
-              style="background-image:url('assets/images/impact/defending.jpg')"></div>
-            <p class="impact-tag">Protecting our Nation and Earth</p>
-            <h3>Defending Our Home Planet</h3>
-            <p class="impact-sub">Space situational awareness &amp; planetary defense</p>
-            <ul class="impact-links">
+        <article class="impact-item">
+          <h3 class="impact-acc-h">
+            <button class="impact-acc-header" type="button" id="impact-head-2" aria-expanded="true"
+              aria-controls="impact-body-2">
+              <span class="impact-acc-art" aria-hidden="true"
+                style="background-image:url('assets/images/impact/defending.jpg')"></span>
+              <span class="impact-acc-text">
+                <span class="impact-tag">Protecting our Nation and Earth</span>
+                <span class="impact-acc-title">Defending Our Home Planet</span>
+                <span class="impact-sub">Space situational awareness &amp; planetary defense</span>
+              </span>
+              <span class="impact-acc-chev" aria-hidden="true">⌄</span>
+            </button>
+          </h3>
+          <div class="impact-acc-body" id="impact-body-2" role="region" aria-labelledby="impact-head-2">
+            <div class="impact-acc-body-inner">
+              <ul class="impact-links">
               <li><a class="impact-link" href="https://www.minorplanetcenter.net/" target="_blank" rel="noopener">
                   <span class="impact-link-name">Minor Planet Center <span class="impact-arrow"
                       aria-hidden="true">↗</span></span>
@@ -196,13 +209,13 @@
                     including hazardous near-Earth objects — and the foundational data layer for NORAD, the U.S. Space
                     Force, and NASA's Planetary Defense Coordination Office.</span>
                 </a></li>
-              <li><a class="impact-link" href="https://www.minorplanetcenter.net/" target="_blank" rel="noopener">
+              <li><a class="impact-link" href="https://tempo.si.edu" target="_blank" rel="noopener">
                   <span class="impact-link-name">TEMPO Satellite <span class="impact-arrow"
                       aria-hidden="true">↗</span></span>
                   <span class="impact-link-desc">Our TEMPO Satellite provides the first real-time view of air quality
                     and climate change impacts across North America.</span>
                 </a></li>
-              <li><a class="impact-link" href="https://tempo.si.edu" target="_blank" rel="noopener">
+              <li><a class="impact-link" href="https://hitran.org" target="_blank" rel="noopener">
                   <span class="impact-link-name">HITRAN <span class="impact-arrow" aria-hidden="true">↗</span></span>
                   <span class="impact-link-desc">The molecular spectroscopy database underpinning U.S. atmospheric
                     modeling — relied on for directed energy, infrared sensing, and thermal imaging, with no commercial
@@ -216,16 +229,28 @@
                   <span class="impact-link-desc">Anchors a visible U.S. scientific presence at Pituffik Space Base, the
                     military's northernmost installation.</span>
                 </a></li>
-            </ul>
-          </article>
-
-          <article class="impact-card">
-            <div class="impact-art" aria-hidden="true" style="background-image:url('assets/images/impact/ai.jpg')">
+              </ul>
             </div>
-            <p class="impact-tag">AI &amp; open science</p>
-            <h3>Accelerate AI for Science</h3>
-            <p class="impact-sub">Frontier AI and open data infrastructure</p>
-            <ul class="impact-links">
+          </div>
+        </article>
+
+        <article class="impact-item">
+          <h3 class="impact-acc-h">
+            <button class="impact-acc-header" type="button" id="impact-head-3" aria-expanded="true"
+              aria-controls="impact-body-3">
+              <span class="impact-acc-art" aria-hidden="true"
+                style="background-image:url('assets/images/impact/ai.jpg')"></span>
+              <span class="impact-acc-text">
+                <span class="impact-tag">AI &amp; open science</span>
+                <span class="impact-acc-title">Accelerate AI for Science</span>
+                <span class="impact-sub">Frontier AI and open data infrastructure</span>
+              </span>
+              <span class="impact-acc-chev" aria-hidden="true">⌄</span>
+            </button>
+          </h3>
+          <div class="impact-acc-body" id="impact-body-3" role="region" aria-labelledby="impact-head-3">
+            <div class="impact-acc-body-inner">
+              <ul class="impact-links">
               <li><a class="impact-link flagship has-logo" href="https://astroai.cfa.harvard.edu/" target="_blank"
                   rel="noopener">
                   <span class="impact-logo-row">
@@ -252,16 +277,28 @@
                   <span class="impact-link-desc">SAO publishes raw data and code in public repositories — reproducible,
                     transparent, merit-reviewed science.</span>
                 </a></li>
-            </ul>
-          </article>
-
-          <article class="impact-card">
-            <div class="impact-art" aria-hidden="true" style="background-image:url('assets/images/impact/xray.jpg')">
+              </ul>
             </div>
-            <p class="impact-tag">X-ray astronomy</p>
-            <h3>The National Center of High-Energy Astrophysics</h3>
-            <p class="impact-sub">Operating Chandra for NASA &amp; building the next generation of X-ray missions</p>
-            <ul class="impact-links">
+          </div>
+        </article>
+
+        <article class="impact-item">
+          <h3 class="impact-acc-h">
+            <button class="impact-acc-header" type="button" id="impact-head-4" aria-expanded="true"
+              aria-controls="impact-body-4">
+              <span class="impact-acc-art" aria-hidden="true"
+                style="background-image:url('assets/images/impact/xray.jpg')"></span>
+              <span class="impact-acc-text">
+                <span class="impact-tag">X-ray astronomy</span>
+                <span class="impact-acc-title">The National Center of High-Energy Astrophysics</span>
+                <span class="impact-sub">Operating Chandra for NASA &amp; building the next generation of X-ray missions</span>
+              </span>
+              <span class="impact-acc-chev" aria-hidden="true">⌄</span>
+            </button>
+          </h3>
+          <div class="impact-acc-body" id="impact-body-4" role="region" aria-labelledby="impact-head-4">
+            <div class="impact-acc-body-inner">
+              <ul class="impact-links">
               <li><a class="impact-link" href="https://chandra.si.edu/" target="_blank" rel="noopener">
                   <span class="impact-link-name">Chandra X-ray Observatory <span class="impact-arrow"
                       aria-hidden="true">↗</span></span>
@@ -281,16 +318,28 @@
                   <span class="impact-link-desc">From the Einstein Observatory to Chandra to concepts like Lynx, SAO
                     builds the X-ray observatories that come next.</span>
                 </a></li>
-            </ul>
-          </article>
+              </ul>
+            </div>
+          </div>
+        </article>
 
-          <article class="impact-card">
-            <div class="impact-art" aria-hidden="true"
-              style="background-image:url('assets/images/impact/engineering.jpg')"></div>
-            <p class="impact-tag">World-class engineering</p>
-            <h3>Building What No One Else Can</h3>
-            <p class="impact-sub">Instruments for the ground and for space</p>
-            <ul class="impact-links">
+        <article class="impact-item">
+          <h3 class="impact-acc-h">
+            <button class="impact-acc-header" type="button" id="impact-head-5" aria-expanded="true"
+              aria-controls="impact-body-5">
+              <span class="impact-acc-art" aria-hidden="true"
+                style="background-image:url('assets/images/impact/engineering.jpg')"></span>
+              <span class="impact-acc-text">
+                <span class="impact-tag">World-class engineering</span>
+                <span class="impact-acc-title">Building What No One Else Can</span>
+                <span class="impact-sub">Instruments for the ground and for space</span>
+              </span>
+              <span class="impact-acc-chev" aria-hidden="true">⌄</span>
+            </button>
+          </h3>
+          <div class="impact-acc-body" id="impact-body-5" role="region" aria-labelledby="impact-head-5">
+            <div class="impact-acc-body-inner">
+              <ul class="impact-links">
               <li><a class="impact-link" href="https://www.cfa.harvard.edu/people/central-engineering" target="_blank"
                   rel="noopener">
                   <span class="impact-link-name">Central Engineering <span class="impact-arrow"
@@ -319,16 +368,28 @@
                     by radio telescopes operated by the Center for Astrophysics, along with the computers and custom
                     software packages used to process this data.</span>
                 </a></li>
-            </ul>
-          </article>
-
-          <article class="impact-card">
-            <div class="impact-art" aria-hidden="true" style="background-image:url('assets/images/impact/stars.jpg')">
+              </ul>
             </div>
-            <p class="impact-tag">Education &amp; outreach</p>
-            <h3>Inspiring the Next Generation</h3>
-            <p class="impact-sub">Bringing the universe to students and teachers across America</p>
-            <ul class="impact-links">
+          </div>
+        </article>
+
+        <article class="impact-item">
+          <h3 class="impact-acc-h">
+            <button class="impact-acc-header" type="button" id="impact-head-6" aria-expanded="true"
+              aria-controls="impact-body-6">
+              <span class="impact-acc-art" aria-hidden="true"
+                style="background-image:url('assets/images/impact/stars.jpg')"></span>
+              <span class="impact-acc-text">
+                <span class="impact-tag">Education &amp; outreach</span>
+                <span class="impact-acc-title">Inspiring the Next Generation</span>
+                <span class="impact-sub">Bringing the universe to students and teachers across America</span>
+              </span>
+              <span class="impact-acc-chev" aria-hidden="true">⌄</span>
+            </button>
+          </h3>
+          <div class="impact-acc-body" id="impact-body-6" role="region" aria-labelledby="impact-head-6">
+            <div class="impact-acc-body-inner">
+              <ul class="impact-links">
               <li><a class="impact-link flagship has-logo"
                   href="https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-launches-nationwide-astronomy-program-rural-schools"
                   target="_blank" rel="noopener">
@@ -350,11 +411,11 @@
                     evidence-based STEM curricula, learning technologies, out-of-school programs, and teacher
                     professional development for K-12 and beyond.</span>
                 </a></li>
-            </ul>
-          </article>
+              </ul>
+            </div>
+          </div>
+        </article>
 
-        </div>
-        <button class="scroll-btn scroll-next" aria-label="More impact cards" hidden>›</button>
       </div>
 
       <!-- ----- SAO Discoveries ----- -->

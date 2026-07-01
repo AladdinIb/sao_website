@@ -614,60 +614,130 @@ a { color: inherit; }
   border-radius: 0;
 }
 
-/* ---------- Impact cards ---------- */
+/* ---------- Impact accordion ----------
+   A vertical stack of themed disclosures (replaced a horizontal carousel).
+   Each row's header is the toggle button; bodies expand one at a time. The
+   bodies are open by default so the section is fully readable with no JS —
+   main.js adds `.js` to the container, which switches on the collapse. */
 
-/* Cards size to their content and top-align, so headers sit right under the row. */
-.impact-grid { padding: .4rem .2rem 1rem; align-items: flex-start; }
-
-.impact-card {
-  flex: 0 0 min(380px, 86vw);
+.impact-accordion {
+  max-width: 960px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(460px 240px at 88% -12%, rgba(56, 189, 248, .18), transparent 65%),
-    linear-gradient(170deg, var(--si-blue-deep) 0%, var(--si-blue) 100%);
-  color: var(--white);
-  border-radius: var(--card-radius);
-  border-top: 4px solid var(--si-yellow);
-  padding: 0 1.9rem 1.6rem;
-  overflow: hidden;
-  box-shadow: 0 6px 24px rgba(14, 23, 38, .14);
+  gap: .9rem;
 }
 
-/* Full-bleed top image. A bottom-to-transparent mask lets the card's own
-   background show through the lower part of the image, so the image melts into
-   the navy with no seam (no colour-matched overlay to leave a hard edge). */
-.impact-art {
-  height: 172px;
-  margin: 0 -1.9rem;
+/* Each themed row: navy card with a yellow top accent, echoing the old cards. */
+.impact-item {
+  background:
+    radial-gradient(460px 240px at 92% -20%, rgba(56, 189, 248, .16), transparent 65%),
+    linear-gradient(170deg, var(--si-blue-deep) 0%, var(--si-blue) 100%);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-top: 3px solid var(--si-yellow);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(14, 23, 38, .14);
+  transition: border-color .25s ease;
+}
+.impact-item.open { border-color: rgba(56, 189, 248, .55); border-top-color: var(--si-yellow); }
+
+/* The whole header is the disclosure button, wrapped in an <h3> for heading order. */
+.impact-acc-h { margin: 0; font: inherit; font-weight: inherit; }
+.impact-acc-header {
+  display: flex;
+  align-items: stretch;
+  gap: 1.3rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Left image that melts left-to-right into the navy via a horizontal mask. */
+.impact-acc-art {
+  flex: 0 0 clamp(120px, 26%, 260px);
+  align-self: stretch;
+  min-height: 124px;
   background-size: cover;
   background-position: center;
-  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 30%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 30%, transparent 100%);
+}
+
+.impact-acc-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.15rem .25rem 1.15rem 0;
+}
+
+.impact-acc-title { display: block; font-size: 1.42rem; line-height: 1.2; margin-bottom: .35rem; }
+
+/* Chevron only carries meaning once JS wires up the collapse. */
+.impact-acc-chev {
+  display: none;
+  flex: 0 0 auto;
+  align-self: center;
+  padding-right: 1.4rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, .55);
+  transition: transform .3s ease, color .25s ease;
+}
+.impact-accordion.js .impact-acc-chev { display: block; }
+.impact-item.open .impact-acc-chev { transform: rotate(180deg); color: var(--si-yellow); }
+.impact-acc-header:hover .impact-acc-chev { color: var(--si-cyan); }
+
+/* Body animates open via grid-template-rows 0fr -> 1fr; inner clips the overflow. */
+.impact-acc-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows .35s ease;
+}
+.impact-accordion.js .impact-item:not(.open) .impact-acc-body { grid-template-rows: 0fr; }
+.impact-acc-body-inner { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .impact-acc-body { transition: none; }
+}
+
+@media (max-width: 560px) {
+  .impact-acc-art { flex-basis: 96px; min-height: 104px; }
+  .impact-acc-title { font-size: 1.15rem; }
+  .impact-acc-header { gap: .9rem; }
 }
 
 .impact-tag {
+  display: block;
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--si-cyan);
-  margin-bottom: .55rem;
+  margin-bottom: .4rem;
 }
 
-.impact-card h3 { font-size: 1.42rem; line-height: 1.2; margin-bottom: .35rem; }
-
 .impact-sub {
+  display: block;
   font-size: .9rem;
   color: var(--si-yellow);
-  margin-bottom: 1.2rem;
+  margin: 0;
 }
 
 .impact-links {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: .6rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: .7rem;
+  padding: .2rem 1.5rem 1.6rem;
 }
 
 .impact-link {

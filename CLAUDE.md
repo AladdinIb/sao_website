@@ -44,11 +44,16 @@ exist and is NOT this site).
   scripts/update_news.py (scrapes cfa.harvard.edu/news; regex tied to their Drupal markup —
   a.copy-box / news-photo-frame / h4). A daily GitHub Action commits refreshes. Never
   hand-edit news.json.
-- Expander cards (.expanders section, #impact): two compact .collapse-header cards side
-  by side; full-width .collapse-body siblings expand below the pair (grid-template-rows
-  0fr→1fr), accordion-style (one open at a time). Toggle button carries aria-expanded,
-  closed bodies are `inert`. News (#news) is its own always-visible section above them;
-  its JS-rendered cards must use <h3> (heading-order: section h2 → card h3).
+- Impact accordion (#impact-accordion): a vertical stack of `.impact-item` themed disclosures
+  (this replaced a horizontal carousel). Each header is an `<h3 class="impact-acc-h">` wrapping a
+  `.impact-acc-header` button (heading wraps button → heading order + accessible name both kept);
+  the left `.impact-acc-art` image fades left→right into the navy via a horizontal mask-image.
+  Bodies (`.impact-acc-body`) expand via grid-template-rows 0fr→1fr, accordion-style (one open at
+  a time). Bodies render OPEN by default so the section works with no JS; main.js adds `.js` to the
+  container to switch on the collapse, open the first row, and mark closed bodies `inert`. The
+  chevron is `display:none` until `.js` is present. Preserve the no-JS-open / JS-collapse invariant.
+  News (#news) is its own always-visible section above #impact; its JS-rendered cards must use <h3>
+  (heading-order: section h2 → card h3).
   WARNING: when splicing index.html with regex, anchor extraction patterns precisely —
   a greedy initiative-grid regex once swallowed the news block and half the missions
   section, duplicating them. Sanity-check section counts after any large splice.

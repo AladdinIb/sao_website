@@ -427,16 +427,30 @@
       });
   }
 
-  /* ---------- Impact cards carousel ---------- */
+  /* ---------- Impact accordion ----------
+     Themed disclosures, one open at a time. Bodies render open (no-JS safe);
+     here we switch on the collapse, open the first row, and keep closed bodies
+     out of the tab order via `inert`. */
 
-  const impactGrid = document.getElementById("impact-grid");
-  if (impactGrid) {
-    initScroller(impactGrid, {
-      prev: document.querySelector(".impact-scroller .scroll-prev"),
-      next: document.querySelector(".impact-scroller .scroll-next"),
-      toggle: document.querySelector('.carousel-toggle[data-carousel="impact"]'),
-      autoplay: true,
-      interval: 7000
+  const impactAcc = document.getElementById("impact-accordion");
+  if (impactAcc) {
+    impactAcc.classList.add("js");
+    const items = Array.from(impactAcc.querySelectorAll(".impact-item"));
+
+    const setOpen = (item, open) => {
+      item.classList.toggle("open", open);
+      item.querySelector(".impact-acc-header").setAttribute("aria-expanded", String(open));
+      item.querySelector(".impact-acc-body").inert = !open;
+    };
+
+    items.forEach((item, i) => setOpen(item, i === 0));
+
+    items.forEach((item) => {
+      item.querySelector(".impact-acc-header").addEventListener("click", () => {
+        const willOpen = !item.classList.contains("open");
+        items.forEach((other) => setOpen(other, false));
+        if (willOpen) setOpen(item, true);
+      });
     });
   }
 

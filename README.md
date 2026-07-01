@@ -13,7 +13,7 @@ index.html                  Single-page site (hero, stats, impact, missions, his
 css/style.css               All styles; brand colors as CSS variables in :root
 js/main.js                  Interactions: nav, scroll reveals, hero slideshow,
                             rotating stat, photo mosaic, news feed,
-                            impact + discoveries carousels, timeline
+                            impact accordion, discoveries carousel, timeline
 assets/
   logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI, NASA SciX (SVG)
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
@@ -67,33 +67,42 @@ there is actually overflow in that direction.
 
 ## "Our National & Global Impact" section (#impact)
 
-Two always-visible horizontal carousels, both auto-advancing and user-controllable. They share
-one helper, `initScroller(track, { prev, next, toggle, autoplay, interval })` in `js/main.js`:
-overflow-aware ‹ › arrows, optional auto-advance that loops back at the end, a pause/play toggle,
-and a transient pause on hover/keyboard-focus. Everything is disabled under
-`prefers-reduced-motion` (no auto-scroll; arrows still work) and the news feed reuses the same
-helper with autoplay off. Markup pattern per carousel: `.scroller` wrapper › `.scroll-btn`
-arrows + `.h-scroll` track, with a `.carousel-toggle` in a `.carousel-controls` row above it.
+This section holds a vertical **accordion** of themed cards (`#impact`) followed by the **SAO
+Discoveries** carousel (`#discoveries`). The discoveries row and the news feed are the only
+horizontal carousels left; they share one helper, `initScroller(track, { prev, next, toggle,
+autoplay, interval })` in `js/main.js`: overflow-aware ‹ › arrows, optional auto-advance that loops
+back at the end, a pause/play toggle, and a transient pause on hover/keyboard-focus. Everything is
+disabled under `prefers-reduced-motion` (no auto-scroll; arrows still work). Carousel markup
+pattern: `.scroller` wrapper › `.scroll-btn` arrows + `.h-scroll` track, with a `.carousel-toggle`
+in a `.carousel-controls` row above it.
 
-**Impact cards** are plain HTML `.impact-card`s in `index.html` (`#impact-grid`) — edit them there.
-Each item is an `.impact-link` (whole bullet is a clickable external link with title + description);
-the four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
-treatment. The AstroAI and SciX flagship links additionally carry `.has-logo` and show the brand
-SVG (`assets/logos/astroAI_without_encoder.svg`, `assets/logos/scix_light.svg` — the light variant
-for the dark card) in place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix`.
-The STARS card shows its logo as the *card title* instead: an `<img class="impact-title-logo">`
-(`STARS_Logo_Lockup_Horizontal_White.svg`) wrapped in the `<h3 class="has-logo-title">` so the
-heading outline and accessible name are preserved. **Keep the outbound URLs working** — they point
-at real resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering,
+**Impact accordion** — plain HTML `.impact-item`s in `index.html` (`#impact-accordion`), edit them
+there. Each row's header is the disclosure toggle: an `<h3 class="impact-acc-h">` wrapping a
+`<button class="impact-acc-header">` (heading wraps the button so heading order and a meaningful
+accessible name are both preserved). The button holds the left image (`.impact-acc-art`), the text
+column (`.impact-tag` kicker, `.impact-acc-title`, `.impact-sub`), and a `.impact-acc-chev` chevron.
+The `.impact-acc-body` below it animates open via `grid-template-rows: 0fr→1fr` (inner wrapper clips
+the overflow). Bodies render **open by default** so the section is fully readable with no JS;
+`js/main.js` adds `.js` to `#impact-accordion`, which switches on the collapse, opens the first row,
+and marks closed bodies `inert` (out of the tab order). One open at a time. The chevron is hidden
+until JS wires it up.
+
+Each row's links are `.impact-link`s (whole bullet is a clickable external link with title +
+description), laid out in a responsive `repeat(auto-fit, minmax(280px, 1fr))` grid inside the body.
+The four marked `.flagship` (Minor Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent
+treatment; AstroAI, SciX, and STARS additionally carry `.has-logo` and show a brand SVG
+(`astroAI_without_encoder.svg`, `scix_light.svg`, `STARS_Logo_Lockup_Horizontal_White.svg` — light
+variants for the dark card) in place of the text title, sized via `.impact-logo-astroai` /
+`.impact-logo-scix` / `.impact-logo-stars`. **Keep the outbound URLs working** — they point at real
+resources (MPC, HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering,
 science-education-department, etc.).
 
-Each card opens with a full-bleed `.impact-art` top image (set via inline `background-image`) that
-fades into the card's navy via a `mask-image` (the image itself fades to transparent so the card's
-own background shows through — no seam). Images live in `assets/images/impact/` (800×360 JPEGs:
-`leadership`, `defending`, `ai`, `xray`, `engineering`, `stars`, `education`). To swap one, replace
-the file (keep the name) or point the card's `background-image` at a new file — optimize to ~800px
-wide / under ~150KB first. Cards are variable-height and top-anchored
-(`.impact-grid { align-items: flex-start }`).
+Each row's `.impact-acc-art` image (set via inline `background-image`) sits on the left and fades
+**left-to-right** into the navy via a horizontal `mask-image` (the image itself fades to transparent
+so the card's own background shows through — no seam). Images live in `assets/images/impact/`
+(800×360 JPEGs: `leadership`, `defending`, `ai`, `xray`, `engineering`, `stars`, `education`). To
+swap one, replace the file (keep the name) or point the row's `background-image` at a new file —
+optimize to ~800px wide / under ~150KB first.
 
 **SAO Discoveries** (`#discovery-grid`) is data-driven from the `DISCOVERIES` array in `js/main.js`
 (`{ title, blurb, image, credit }`), rendered as image-topped cards reusing the mission `.card-art`
@@ -198,8 +207,8 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
 - **Motion** — with `prefers-reduced-motion` enabled, reveals/starfield/mosaic/stat rotation, the
-  hero slideshow, and the impact/discoveries carousels all go static (the slideshow starts paused on
-  one frame; carousels don't auto-advance but arrows still work). Auto-advancing carousels also
+  hero slideshow, and the discoveries carousel all go static (the slideshow starts paused on
+  one frame; the carousel doesn't auto-advance but arrows still work). Auto-advancing carousels also
   carry a visible pause/play control (WCAG 2.2.2).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
