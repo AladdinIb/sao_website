@@ -168,6 +168,73 @@ To add a new discovery image:
 2. Add or edit the matching `<li class="discovery-row">` in `index.html` by hand (see the pattern
    above) — title, blurb, credit, category tag, and the image filename.
 
+## Adding a partner/mission logo (e.g. TEMPO, STARS, AstroAI)
+
+There's no script for this one — logos each need a human to pick where they go and write real alt
+text, so it's a two-step manual copy-paste-and-edit. Takes a few minutes.
+
+**1. Get the file into `assets/logos/`, optimized.**
+
+- If it's already an SVG, just drop it in — nothing to optimize.
+- If it's a raster PNG/JPG (like `TEMPO-Logo.png`), it's almost always way oversized straight out of
+  a media-kit download (the original TEMPO logo was 3300px, 958KB for a graphic that displays at
+  ~40px tall). Back up the original, then downsize with `sips` — a logo never needs to be taller
+  than ~320px even for retina displays:
+
+  ```bash
+  cd assets/logos
+  mkdir -p originals && cp YourLogo.png originals/
+  sips --resampleHeight 320 YourLogo.png --out YourLogo.png
+  ```
+
+  That alone (no quality flags needed for a mostly-flat-color logo) took TEMPO's logo from 958KB to
+  91KB. `originals/` is gitignored — keep the master there, ship only the resized file.
+
+**2. Add it in one or both of two places, matching an existing logo exactly:**
+
+- **A mission card** under "Our Missions" (`.card`) — add a second `<img class="card-logo">` right
+  after the card's photo, inside `.card-art`. No new CSS needed; `.card-logo` is a single shared
+  rule (46px tall, bottom-left, drop-shadow) used by every card logo:
+
+  ```html
+  <div class="card-art">
+    <img src="assets/images/card_images/whatever.jpg" alt="..." loading="lazy">
+    <img class="card-logo" src="assets/logos/YourLogo.png" alt="">
+    <span class="card-tag">...</span>
+  </div>
+  ```
+
+- **An accordion flagship link** inside `#impact-accordion` (see AstroAI, NASA SciX, STARS, TEMPO
+  for examples) — add `flagship has-logo` to the `<a class="impact-link">`, then swap
+  `.impact-link-name` for an `.impact-logo-row` containing the logo image and the arrow:
+
+  ```html
+  <li><a class="impact-link flagship has-logo" href="https://example.org" target="_blank" rel="noopener">
+      <span class="impact-logo-row">
+        <img class="impact-logo impact-logo-yourlogo" src="assets/logos/YourLogo.png" alt="Your Org"
+          width="42" height="40">
+        <span class="impact-arrow" aria-hidden="true">↗</span>
+      </span>
+      <span class="impact-link-desc">One or two sentences about it.</span>
+    </a></li>
+  ```
+
+  Then add one line to `css/style.css` next to `.impact-logo-astroai` / `.impact-logo-scix` /
+  `.impact-logo-stars` / `.impact-logo-tempo`, sizing your logo to read at a comfortable height —
+  wordmarks usually want ~26–32px, a squarish badge (like TEMPO's) wants a bit taller (~40px) since
+  it has less horizontal reach at the same height:
+
+  ```css
+  .impact-logo-yourlogo { height: 32px; }
+  ```
+
+  Match the `width`/`height` HTML attributes to the logo's real aspect ratio (`sips -g pixelWidth -g
+  pixelHeight file.png` if unsure) so the browser reserves the right space before the image loads.
+
+You don't have to do both placements — TEMPO's mission card and accordion link both got the logo
+here because it fit well in both spots, but a logo that's only relevant to one context (e.g. a
+tool-only flagship link with no dedicated mission card) only needs the one snippet.
+
 ## Hero backdrops
 
 The landing hero shows a **static** backdrop that the visitor switches with the ‹ › arrow controls

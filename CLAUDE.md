@@ -32,6 +32,14 @@ exist and is NOT this site).
   fallback — acceptable, outlined versions would be better). CfA + Smithsonian Science
   logos are fully outlined. "Reversed" = white text for dark backgrounds. The white STARS
   logo is a generated recolor of the black one.
+- Partner/mission logos (TEMPO, STARS, AstroAI, NASA SciX) are manual, not scripted — see
+  README "Adding a partner/mission logo". Two placements, both optional independently:
+  `.card-logo` (uniform 46px, bottom-left of a mission card's `.card-art`) and the accordion's
+  `.impact-link.flagship.has-logo` + `.impact-logo-row` (each logo gets its own
+  `.impact-logo-<name>` height rule — wordmarks ~26-32px, squarish badges like TEMPO ~40px
+  since they have less horizontal reach at the same height). Raster logos land oversized from
+  media kits (TEMPO's was 3300px/958KB) — always `sips --resampleHeight 320` before shipping;
+  keep the master in `assets/logos/originals/` (gitignored).
 - Mosaic: `scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it
   numbers tiles, regenerates `MOSAIC_MANIFEST` in js/main.js, and syntax-checks. In dev the
   mosaic auto-discovers via directory listing; on Pages it uses the manifest. The rotation

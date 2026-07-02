@@ -23,3 +23,6 @@ assets/images/discoveries/*.webp
 assets/images/discoveries/*.tif
 assets/images/discoveries/*.tiff
 assets/images/discoveries/originals/
+
+# Raster logo masters — only the resized logo ships.
+assets/logos/originals/
