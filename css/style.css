@@ -140,6 +140,12 @@ a { color: inherit; }
   position: relative;
   padding: .25rem 0;
   transition: color .5s ease;
+  /* Flex items can shrink below their text's full width (min-width:auto lets
+     wrappable text collapse to its longest word), so "Our History" / "The
+     Center for Astrophysics" broke mid-phrase in the ~760-950px range before
+     the hamburger takes over. nowrap keeps each link on one line; the row
+     itself never overflows here (verified down to 761px). */
+  white-space: nowrap;
 }
 
 .site-nav a::after {
