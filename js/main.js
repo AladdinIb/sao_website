@@ -93,12 +93,12 @@
     light: "assets/logos/si_AO_rgb_verical_color.svg"           // colour lockup w/ dark wordmark
   };
   const HERO_MANIFEST = [
-    { file: "veritas.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
-    { file: "milkyway_backdrop.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
-    { file: "chandra_launch.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
-    { file: "galactic_center.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
-    { file: "mmt.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
-    { file: "sma.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." },
+    { file: "milkyway_backdrop.jpg", credit: "Our home galaxy, the Milky Way. Credit: ESO/S. Brunier" },
+    { file: "veritas.jpg", credit: "SAO's VERITAS Gamma-ray Observatory in Amado, AZ" },
+    { file: "chandra_launch.jpg", credit: "The launch of NASA's Chandra X-ray Observatory aboard the Space Shuttle Columbia, July 23, 1999. Credit: NASA" },
+    { file: "galactic_center.jpg", credit: "Chandra's X-ray view of the Galactic Center. Credit: NASA/CXC" },
+    { file: "mmt.jpg", credit: "SAO's MMT Telescope in Arizona. " },
+    { file: "sma.jpg", credit: "SAO's Submillimeter Array in Hawaii.", tone: "light" },
     { file: "Screenshot 2026-07-01 at 4.12.49 PM.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
   ];
 
