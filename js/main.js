@@ -45,6 +45,20 @@
     }
   });
 
+  // Crossing the 760px breakpoint mid-resize flips .site-nav from an
+  // in-flow desktop row to a fixed, translateY(-100%)/hidden overlay in the
+  // same style recalc that the CSS transition rule turns on — so the browser
+  // treats "no transform" -> "translateY(-100%)" as a real transition and
+  // the closed overlay briefly flashes in before animating back out. Kill
+  // the transition for exactly the one recalc where the breakpoint flips,
+  // so the closed state snaps in instantly instead of animating.
+  const navBreakpoint = window.matchMedia("(max-width: 760px)");
+  const suppressNavTransition = () => {
+    nav.style.transition = "none";
+    requestAnimationFrame(() => requestAnimationFrame(() => { nav.style.transition = ""; }));
+  };
+  navBreakpoint.addEventListener("change", suppressNavTransition);
+
   /* ---------- Scroll-reveal ---------- */
 
   const revealObserver = new IntersectionObserver((entries) => {
