@@ -710,9 +710,45 @@ a { color: inherit; }
 }
 
 @media (max-width: 560px) {
-  .impact-acc-art { flex-basis: 96px; min-height: 104px; }
-  .impact-acc-title { font-size: 1.15rem; }
-  .impact-acc-header { gap: .9rem; }
+  /* A side-by-side 96px thumbnail crops these landscape photos down to an
+     unrecognizable sliver. Below this width, let the photo bleed behind the
+     whole header instead, with a scrim so the text stays legible over any
+     photo, bright or dark. */
+  .impact-acc-header {
+    position: relative;
+    display: block;
+    min-height: 148px;
+    padding: 1.1rem 3rem 1.2rem 1.1rem;
+  }
+  .impact-acc-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    /* Full-bleed now, not a fading side strip. */
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .impact-acc-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 13, 36, .82) 0%, rgba(5, 13, 36, .86) 55%, rgba(5, 13, 36, .94) 100%);
+  }
+  .impact-acc-text {
+    position: relative;
+    z-index: 1;
+    padding: 0;
+  }
+  .impact-acc-title { font-size: 1.15rem; text-shadow: 0 1px 8px rgba(0, 0, 0, .5); }
+  .impact-acc-chev {
+    position: absolute;
+    top: 1rem;
+    right: .9rem;
+    z-index: 2;
+    padding-right: 0;
+  }
 }
 
 .impact-tag {
